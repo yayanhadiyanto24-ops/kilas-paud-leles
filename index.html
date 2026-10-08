@@ -227,5 +227,57 @@ async function startApp(){
 }
 document.addEventListener("DOMContentLoaded",startApp);
 </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const postForm = document.querySelector('form');
+    const postInput = document.querySelector('textarea, input[type="text"]');
+    const feedContainer = document.querySelector('#feed, .feed, main');
+
+    function renderPosts() {
+      const savedPosts = JSON.parse(localStorage.getItem('kilas_posts') || '[]');
+      if (!feedContainer) return;
+      
+      const existingContainer = document.getElementById('local-posts-list');
+      if (existingContainer) existingContainer.remove();
+
+      const postsWrapper = document.createElement('div');
+      postsWrapper.id = 'local-posts-list';
+      
+      savedPosts.forEach(post => {
+        const postCard = document.createElement('div');
+        postCard.className = 'bg-white p-4 rounded-lg shadow mb-3 border border-slate-200';
+        postCard.innerHTML = `
+          <p class="text-slate-800 text-sm mb-2">${post.text}</p>
+          <span class="text-xs text-slate-400">${post.date}</span>
+        `;
+        postsWrapper.appendChild(postCard);
+      });
+
+      feedContainer.prepend(postsWrapper);
+    }
+
+    if (postForm) {
+      postForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const text = postInput ? postInput.value.trim() : '';
+        if (!text) return;
+
+        const newPost = {
+          text: text,
+          date: new Date().toLocaleString('id-ID')
+        };
+
+        const savedPosts = JSON.parse(localStorage.getItem('kilas_posts') || '[]');
+        savedPosts.unshift(newPost);
+        localStorage.setItem('kilas_posts', JSON.stringify(savedPosts));
+
+        if (postInput) postInput.value = '';
+        renderPosts();
+      });
+    }
+
+    renderPosts();
+  });
+</script>
 </body>
 </html>
