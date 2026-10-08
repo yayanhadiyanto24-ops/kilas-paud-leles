@@ -1,18 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tes</title>
+  <meta charset="UTF-8">
+  <title>Tes Supabase</title>
 </head>
+
 <body>
 
-<h1>Kilas PAUD</h1>
+<h2>Tes Koneksi Supabase</h2>
 
-<button onclick="tes()">TEKAN SAYA</button>
+<button onclick="tesSupabase()">TES SUPABASE</button>
+
+<p id="hasil"></p>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-function tes() {
-  alert("JAVASCRIPT BERJALAN!");
+
+const SUPABASE_URL =
+"https://hyiwkftkwacbiowooulp.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_lamtyGaC7AQgNTUUUb9hsQ_ebFjuB4z";
+
+const db =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+async function tesSupabase(){
+
+  const hasil =
+  document.getElementById("hasil");
+
+  hasil.textContent =
+  "Sedang menghubungkan...";
+
+  const tes =
+  await db
+  .from("posts")
+  .select("*")
+  .limit(1);
+
+  if(tes.error){
+
+    hasil.textContent =
+    "GAGAL: " + tes.error.message;
+
+    return;
+  }
+
+  hasil.textContent =
+  "BERHASIL! Supabase terhubung.";
+
 }
+
 </script>
 
 </body>
