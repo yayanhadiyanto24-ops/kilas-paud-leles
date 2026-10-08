@@ -1,19 +1,153 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Tes Supabase</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kilas PAUD Kecamatan Leles</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#eef3f7;
+  color:#263238
+}
+.header{
+  background:linear-gradient(135deg,#0d8bdc,#19b56b);
+  color:white;
+  padding:22px 15px;
+  text-align:center;
+  box-shadow:0 2px 8px #0002
+}
+.header h1{margin:0;font-size:25px}
+.header p{margin:7px 0 0;font-size:14px}
+.container{
+  max-width:720px;
+  margin:auto;
+  padding:15px
+}
+.card{
+  background:white;
+  border-radius:16px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 2px 10px #0001
+}
+h2{
+  margin-top:0;
+  font-size:20px
+}
+label{
+  display:block;
+  font-weight:bold;
+  margin-top:10px;
+  margin-bottom:5px
+}
+input,textarea{
+  width:100%;
+  padding:12px;
+  border:1px solid #ccd6dd;
+  border-radius:10px;
+  font-size:15px;
+  font-family:inherit
+}
+textarea{
+  min-height:110px;
+  resize:vertical
+}
+button{
+  width:100%;
+  margin-top:14px;
+  padding:13px;
+  border:0;
+  border-radius:10px;
+  background:#12a85a;
+  color:white;
+  font-size:16px;
+  font-weight:bold
+}
+button:active{opacity:.8}
+.status{
+  text-align:center;
+  margin-top:12px;
+  font-weight:bold
+}
+.post{
+  border-top:1px solid #e1e7eb;
+  padding-top:16px;
+  margin-top:16px
+}
+.post:first-child{
+  border-top:0;
+  margin-top:0;
+  padding-top:0
+}
+.nama{
+  font-size:17px;
+  font-weight:bold;
+  color:#087fbe
+}
+.tanggal{
+  font-size:12px;
+  color:#718096;
+  margin-top:4px
+}
+.kabar{
+  margin-top:10px;
+  line-height:1.55;
+  white-space:pre-wrap
+}
+.post img{
+  width:100%;
+  margin-top:12px;
+  border-radius:12px;
+  display:block
+}
+.empty{
+  text-align:center;
+  color:#718096;
+  padding:20px 5px
+}
+</style>
 </head>
 
 <body>
 
-<h2>Tes Koneksi Supabase</h2>
+<div class="header">
+  <h1>🌿 Kilas PAUD Kecamatan Leles</h1>
+  <p>Berbagi kabar, kegiatan, dan informasi PAUD</p>
+</div>
 
-<button onclick="tesSupabase()">TES SUPABASE</button>
+<div class="container">
 
-<p id="hasil"></p>
+  <div class="card">
+    <h2>📢 Posting Kabar</h2>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <label>Nama / Lembaga</label>
+    <input id="nama" placeholder="Contoh: PAUD Melati">
+
+    <label>Kabar</label>
+    <textarea id="isi" placeholder="Tuliskan kabar atau kegiatan PAUD..."></textarea>
+
+    <label>Foto (opsional)</label>
+    <input id="foto" type="file" accept="image/*">
+
+    <label>PIN (opsional)</label>
+    <input id="pin" type="text" placeholder="PIN posting">
+
+    <button type="button" onclick="posting()">POSTING KABAR</button>
+
+    <div id="pesan" class="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>📰 Kabar Terbaru</h2>
+    <div id="daftar">Memuat kabar...</div>
+  </div>
+
+</div>
 
 <script>
 
@@ -29,34 +163,244 @@ window.supabase.createClient(
   SUPABASE_KEY
 );
 
-async function tesSupabase(){
+
+async function posting(){
+
+  const pesan =
+    document.getElementById("pesan");
+
+  const nama =
+    document.getElementById("nama").value.trim();
+
+  const isi =
+    document.getElementById("isi").value.trim();
+
+  const pin =
+    document.getElementById("pin").value.trim();
+
+  const file =
+    document.getElementById("foto").files[0];
+
+
+  if(!nama || !isi){
+    pesan.textContent =
+      "Nama dan kabar harus diisi.";
+    return;
+  }
+
+
+  pesan.textContent =
+    "Sedang mengirim...";
+
+
+  let fotoUrl = "";
+
+
+  try{
+
+    /* UPLOAD FOTO */
+
+    if(file){
+
+      const namaFile =
+        Date.now()+"-"+file.name;
+
+      const upload =
+        await db.storage
+        .from("post-images")
+        .upload(namaFile,file);
+
+      if(upload.error){
+
+        pesan.textContent =
+          "Gagal upload foto: "+
+          upload.error.message;
+
+        return;
+      }
+
+
+      const url =
+        db.storage
+        .from("post-images")
+        .getPublicUrl(namaFile);
+
+      fotoUrl =
+        url.data.publicUrl;
+    }
+
+
+    /* SIMPAN KE DATABASE */
+
+    const simpan =
+      await db
+      .from("posts")
+      .insert([{
+        username:nama,
+        content:isi,
+        image_url:fotoUrl,
+        pin:pin
+      }]);
+
+
+    if(simpan.error){
+
+      pesan.textContent =
+        "Gagal menyimpan: "+
+        simpan.error.message;
+
+      return;
+    }
+
+
+    pesan.textContent =
+      "✅ Kabar berhasil diposting!";
+
+
+    document.getElementById("nama").value="";
+    document.getElementById("isi").value="";
+    document.getElementById("foto").value="";
+    document.getElementById("pin").value="";
+
+
+    muat();
+
+  }catch(error){
+
+    pesan.textContent =
+      "Terjadi kesalahan: "+
+      error.message;
+
+  }
+
+}
+
+
+async function muat(){
+
+  const daftar =
+    document.getElementById("daftar");
+
 
   const hasil =
-  document.getElementById("hasil");
+    await db
+    .from("posts")
+    .select("*")
+    .order("created_at",{ascending:false});
 
-  hasil.textContent =
-  "Sedang menghubungkan...";
 
-  const tes =
-  await db
-  .from("posts")
-  .select("*")
-  .limit(1);
+  if(hasil.error){
 
-  if(tes.error){
-
-    hasil.textContent =
-    "GAGAL: " + tes.error.message;
+    daftar.innerHTML =
+      "<div class='empty'>"+
+      "Gagal memuat kabar: "+
+      hasil.error.message+
+      "</div>";
 
     return;
   }
 
-  hasil.textContent =
-  "BERHASIL! Supabase terhubung.";
+
+  if(!hasil.data || hasil.data.length===0){
+
+    daftar.innerHTML =
+      "<div class='empty'>"+
+      "Belum ada kabar."+
+      "</div>";
+
+    return;
+  }
+
+
+  daftar.innerHTML="";
+
+
+  hasil.data.forEach(post=>{
+
+    const div =
+      document.createElement("div");
+
+    div.className="post";
+
+
+    const nama =
+      escapeHtml(post.username || "");
+
+    const isi =
+      escapeHtml(post.content || "");
+
+    const tanggal =
+      post.created_at
+      ? new Date(post.created_at)
+        .toLocaleString("id-ID",{
+          dateStyle:"medium",
+          timeStyle:"short"
+        })
+      : "";
+
+
+    let html =
+      "<div class='nama'>"+
+      nama+
+      "</div>";
+
+
+    html +=
+      "<div class='tanggal'>"+
+      tanggal+
+      "</div>";
+
+
+    html +=
+      "<div class='kabar'>"+
+      isi+
+      "</div>";
+
+
+    if(post.image_url){
+
+      html +=
+        "<img src='"+
+        escapeAttribute(post.image_url)+
+        "' alt='Foto kegiatan PAUD'>";
+    }
+
+
+    div.innerHTML=html;
+
+    daftar.appendChild(div);
+
+  });
 
 }
+
+
+function escapeHtml(teks){
+
+  return String(teks)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+function escapeAttribute(teks){
+
+  return String(teks)
+    .replace(/&/g,"&amp;")
+    .replace(/"/g,"&quot;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
+
+}
+
+
+muat();
 
 </script>
 
 </body>
-</html>
+  </html>
