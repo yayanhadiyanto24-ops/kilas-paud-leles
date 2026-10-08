@@ -1,126 +1,187 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kilas PAUD - Kecamatan Leles</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-    body { font-family: 'Plus Jakarta Sans', sans-serif; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kilas PAUD Kecamatan Leles</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100 text-slate-800 pb-20">
 
-  <!-- Header / Navigation -->
-  <header class="bg-amber-400 border-b-2 border-amber-500 sticky top-0 z-50 shadow-sm">
-    <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 bg-slate-900 text-amber-400 rounded-lg flex items-center justify-center font-bold text-lg shrink-0">
-          <i class="fa-solid fa-shapes"></i>
-        </div>
-        <div>
-          <h1 class="text-base font-bold text-slate-900 leading-tight">Kilas PAUD Leles</h1>
-          <p class="text-[11px] text-slate-900 font-semibold flex items-center gap-1">
-            <i class="fa-solid fa-user-tie text-xs"></i> Penilik: Yayan Hadiyanto, S.Pd.-MT.
-          </p>
-        </div>
-      </div>
-      <button onclick="muatDataDariServer()" class="text-xs bg-slate-900 text-amber-400 px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1 hover:bg-slate-800 transition-all">
-        <i class="fa-solid fa-rotate"></i> Segarkan
-      </button>
-    </div>
-  </header>
+<body class="bg-slate-100 p-4">
 
-  <main class="max-w-xl mx-auto px-4 pt-4 space-y-4">
+<div class="max-w-2xl mx-auto">
 
-    <!-- Statistik Ringkas -->
-    <div class="grid grid-cols-3 gap-2">
-      <div class="bg-white p-3 rounded-xl border border-slate-200 text-center shadow-sm">
-        <span id="statTotal" class="block text-lg font-bold text-slate-800">0</span>
-        <span class="text-[11px] text-slate-500">Total Kabar</span>
-      </div>
-      <div class="bg-white p-3 rounded-xl border border-slate-200 text-center shadow-sm">
-        <span id="statPengumuman" class="block text-lg font-bold text-amber-600">0</span>
-        <span class="text-[11px] text-slate-500">Pengumuman</span>
-      </div>
-      <div class="bg-white p-3 rounded-xl border border-slate-200 text-center shadow-sm">
-        <span id="statKegiatan" class="block text-lg font-bold text-blue-600">0</span>
-        <span class="text-[11px] text-slate-500">Kegiatan</span>
-      </div>
-    </div>
-    
-    <!-- Peringkat Keaktifan Lembaga -->
-    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-      <h2 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2 flex items-center gap-2">
-        <i class="fa-solid fa-trophy text-amber-500"></i> Peringkat Keaktifan Lembaga
-      </h2>
-      <div id="papanPeringkat" class="space-y-1.5 text-xs">
-        <div class="text-slate-400 text-center py-1">Memuat data peringkat...</div>
-      </div>
-    </div>
+<h1 class="text-2xl font-bold text-blue-600">
+Kilas PAUD Kecamatan Leles
+</h1>
 
-    <!-- Form Buat Postingan Baru -->
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-      <h2 class="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-        <i class="fa-solid fa-pen-to-square text-amber-500"></i> Buat Postingan Baru
-      </h2>
-      <div class="space-y-3">
-        <!-- Kategori & Nama Lembaga -->
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Kategori</label>
-            <select id="inputKategori" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-amber-400 outline-none">
-              <option value="Pengumuman">📢 Pengumuman</option>
-              <option value="Kegiatan">🎨 Kegiatan PAUD</option>
-              <option value="Prestasi">🏆 Prestasi</option>
-              <option value="Info">ℹ️ Informasi Umum</option>
-            </select>
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Nama Lembaga / PAUD</label>
-            <input id="inputPenulis" type="text" placeholder="Misal: PAUD Kenanga" class="w-full p-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-amber-400 outline-none">
-          </div>
-        </div>
+<p class="mb-4">
+Penilik: Yayan Hadiyanto, S.Pd.-MT.
+</p>
 
-        <!-- Isi Pesan -->
-        <div>
-          <label class="block text-[11px] font-semibold text-slate-600 mb-1">Isi Berita / Informasi</label>
-          <textarea 
-            id="inputPosting" 
-            rows="4" 
-            placeholder="Tuliskan informasi atau dokumentasi kegiatan PAUD di sini..." 
-            class="w-full p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 text-xs"></textarea>
-        </div>
+<div class="bg-white p-4 rounded-xl shadow mb-4">
 
-        <!-- Unggah Foto File & Buat PIN Postingan -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Foto Kegiatan (Opsional)</label>
-            <input id="inputFotoFile" type="file" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
-          </div>
-          <div>
-            <label class="block text-[11px] font-semibold text-slate-600 mb-1">Buat PIN Hapus (4 Angka)</label>
-            <input id="inputPinPost" type="password" maxlength="4" placeholder="Contoh: 1234" class="w-full p-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-amber-400 outline-none">
-          </div>
-        </div>
+<input id="nama"
+placeholder="Nama lembaga / PAUD"
+class="w-full border p-3 rounded mb-3">
 
-        <!-- Tombol Aksi -->
-        <div class="flex justify-between items-center pt-1">
-          <span id="pesanSukses" class="text-xs text-green-600 font-semibold hidden flex items-center gap-1">
-            <i class="fa-solid fa-circle-check"></i> Berhasil diterbitkan!
-          </span>
-          <button 
-            type="button"
-            id="btnPosting"
-            onclick="tambahPost()" 
-            class="ml-auto bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs px-4 py-2.5 rounded-lg transition-all shadow-sm flex items-center gap-2">
-            <i class="fa-solid fa-paper-plane"></i> Posting Kabar
-          </button>
-        </div>
-      </div>
-    </div>
+<textarea id="isi"
+placeholder="Tulis kabar PAUD..."
+class="w-full border p-3 rounded mb-3"
+rows="5"></textarea>
 
-    <!-- Filter & Pencarian -->
-    <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-2">
+<input id="foto"
+type="file"
+accept="image/*"
+class="w-full mb-3">
+
+<input id="pin"
+type="password"
+maxlength="4"
+placeholder="PIN 4 digit"
+class="w-full border p-3 rounded mb-3">
+
+<button onclick="posting()"
+class="w-full bg-blue-600 text-white p-3 rounded font-bold">
+POSTING KABAR
+</button>
+
+<p id="pesan" class="mt-3 text-center"></p>
+
+</div>
+
+<h2 class="text-xl font-bold mb-3">
+Kabar Terbaru
+</h2>
+
+<div id="daftar">
+Memuat...
+</div>
+
+</div>
+
+<script>
+
+const SUPABASE_URL =
+"https://hyiwkftkwacbiowooulp.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_lamtyGaC7AQgNTUUUb9hsQ_ebFjuB4z";
+
+const supabaseClient =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
+
+
+async function muat(){
+
+const hasil =
+await supabaseClient
+.from("posts")
+.select("*")
+.order("created_at",{ascending:false});
+
+if(hasil.error){
+
+document.getElementById("daftar").innerHTML =
+"Gagal memuat: "+hasil.error.message;
+
+return;
+}
+
+let html="";
+
+hasil.data.forEach(p=>{
+
+html+=`
+<div class="bg-white p-4 rounded-xl shadow mb-4">
+
+<b class="text-blue-600">
+${p["user-name"]||"Tanpa nama"}
+</b>
+
+<p class="text-xs text-gray-500">
+${new Date(p.created_at).toLocaleString("id-ID")}
+</p>
+
+<p class="mt-3 whitespace-pre-wrap">
+${p.content||""}
+</p>
+
+${p.image_url ?
+`<img src="${p.image_url}"
+class="w-full rounded-xl mt-3">`
+:""}
+
+</div>
+`;
+
+});
+
+document.getElementById("daftar").innerHTML =
+html || "Belum ada kabar.";
+
+}
+
+
+async function posting(){
+
+const nama =
+document.getElementById("nama").value.trim();
+
+const isi =
+document.getElementById("isi").value.trim();
+
+const pin =
+document.getElementById("pin").value.trim();
+
+const file =
+document.getElementById("foto").files[0];
+
+const pesan =
+document.getElementById("pesan");
+
+
+if(!nama || !isi){
+
+pesan.textContent =
+"Nama dan kabar harus diisi.";
+
+return;
+}
+
+
+if(!/^[0-9]{4}$/.test(pin)){
+
+pesan.textContent =
+"PIN harus 4 angka.";
+
+return;
+}
+
+
+pesan.textContent="Mengirim...";
+
+let fotoUrl=null;
+
+
+if(file){
+
+const namaFile =
+Date.now()+"-"+file.name;
+
+const upload =
+await supabaseClient.storage
+.from("post-images")
+.upload(namaFile,file);
+
+if(upload.error){
+
+pesan.textContent =
+"Gagal upload foto: "+
+upload.error.message;
+
+return;
