@@ -54,7 +54,7 @@
         <i class="fa-solid fa-trophy text-amber-500"></i> Peringkat Keaktifan Lembaga
       </h2>
       <div id="papanPeringkat" class="space-y-1.5 text-xs">
-        <!-- Peringkat otomatis dirender -->
+        <div class="text-slate-400 text-center py-1">Memuat data peringkat...</div>
       </div>
     </div>
 
@@ -110,6 +110,7 @@
           </span>
           <button 
             type="button"
+            id="btnPosting"
             onclick="tambahPost()" 
             class="ml-auto bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs px-4 py-2.5 rounded-lg transition-all shadow-sm flex items-center gap-2">
             <i class="fa-solid fa-paper-plane"></i> Posting Kabar
@@ -123,9 +124,9 @@
       <div class="flex items-center gap-2">
         <div class="relative flex-1">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-          <input id="inputCari" onkeyup="muatPostingan()" type="text" placeholder="Cari kabar atau nama PAUD..." class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:border-amber-400">
+          <input id="inputCari" onkeyup="renderPostingan()" type="text" placeholder="Cari kabar atau nama PAUD..." class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none focus:border-amber-400">
         </div>
-        <select id="filterKategori" onchange="muatPostingan()" class="p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
+        <select id="filterKategori" onchange="renderPostingan()" class="p-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs outline-none">
           <option value="Semua">Semua Kategori</option>
           <option value="Pengumuman">Pengumuman</option>
           <option value="Kegiatan">Kegiatan</option>
@@ -141,34 +142,63 @@
         <h2 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Kabar Terbaru</h2>
       </div>
       <div id="daftarPostingan" class="space-y-3">
-        <!-- Postingan muncul di sini -->
+        <div class="bg-white p-8 rounded-xl text-center text-slate-400 text-xs border border-slate-200">
+          <i class="fa-solid fa-spinner fa-spin text-2xl mb-2 block text-amber-500"></i>
+          Menghubungkan ke database online...
+        </div>
       </div>
     </div>
 
   </main>
 
+  <!-- Firebase Integration -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
   <script>
     const PIN_SAKTI_ADMIN = '9999';
 
-    function muatPostingan() {
+    // Konfigurasi Database Online Firebase Realtime
+    const firebaseConfig = {
+      databaseURL: "https://kilas-paud-leles-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const postsRef = database.ref('posts');
+
+    let allPostsData = [];
+
+    // Dengarkan perubahan data secara Real-time dari Server
+    postsRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      allPostsData = [];
+      if (data) {
+        Object.keys(data).forEach(key => {
+          allPostsData.push({ id: key, ...data[key] });
+        });
+        // Urutkan postingan terbaru di paling atas
+        allPostsData.reverse();
+      }
+      renderPostingan();
+    });
+
+    function renderPostingan() {
       const daftarPostingan = document.getElementById('daftarPostingan');
       const inputCari = document.getElementById('inputCari').value.toLowerCase();
       const filterKategori = document.getElementById('filterKategori').value;
-      
-      const dataTersimpan = JSON.parse(localStorage.getItem('kilas_paud_posts') || '[]');
-      
+
       // Update Statistik
-      document.getElementById('statTotal').innerText = dataTersimpan.length;
-      document.getElementById('statPengumuman').innerText = dataTersimpan.filter(i => i.kategori === 'Pengumuman').length;
-      document.getElementById('statKegiatan').innerText = dataTersimpan.filter(i => i.kategori === 'Kegiatan').length;
+      document.getElementById('statTotal').innerText = allPostsData.length;
+      document.getElementById('statPengumuman').innerText = allPostsData.filter(i => i.kategori === 'Pengumuman').length;
+      document.getElementById('statKegiatan').innerText = allPostsData.filter(i => i.kategori === 'Kegiatan').length;
 
       // Hitung Peringkat Keaktifan
-      hitungPeringkat(dataTersimpan);
+      hitungPeringkat(allPostsData);
 
       daftarPostingan.innerHTML = '';
 
       // Filter Data
-      const dataFiltered = dataTersimpan.filter(item => {
+      const dataFiltered = allPostsData.filter(item => {
         const cocokKata = (item.teks || '').toLowerCase().includes(inputCari) || (item.penulis || '').toLowerCase().includes(inputCari);
         const cocokKategori = filterKategori === 'Semua' || item.kategori === filterKategori;
         return cocokKata && cocokKategori;
@@ -184,7 +214,7 @@
         return;
       }
 
-      dataFiltered.forEach((item, index) => {
+      dataFiltered.forEach((item) => {
         const kartuPost = document.createElement('div');
         kartuPost.className = 'bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-2';
         
@@ -215,7 +245,7 @@
           <p class="text-slate-800 text-xs leading-relaxed whitespace-pre-line">${item.teks}</p>
           ${gambarHTML}
           <div class="flex justify-end pt-2 border-t border-slate-50">
-            <button onclick="hapusPostDenganPin(${index})" class="text-[11px] text-red-500 hover:text-red-700 flex items-center gap-1 font-semibold">
+            <button onclick="hapusPostDenganPin('${item.id}', '${item.pin}')" class="text-[11px] text-red-500 hover:text-red-700 flex items-center gap-1 font-semibold">
               <i class="fa-solid fa-trash-can"></i> Hapus
             </button>
           </div>
@@ -267,6 +297,7 @@
       const inputFotoFile = document.getElementById('inputFotoFile');
       const inputPinPost = document.getElementById('inputPinPost');
       const pesanSukses = document.getElementById('pesanSukses');
+      const btnPosting = document.getElementById('btnPosting');
       
       const teks = inputPosting.value.trim();
       const pinPost = inputPinPost.value.trim();
@@ -281,6 +312,9 @@
         return;
       }
 
+      btnPosting.disabled = true;
+      btnPosting.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memposting...';
+
       const prosesSimpan = (fotoBase64) => {
         const postingBaru = {
           teks: teks,
@@ -291,20 +325,23 @@
           waktu: new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
         };
 
-        const dataTersimpan = JSON.parse(localStorage.getItem('kilas_paud_posts') || '[]');
-        dataTersimpan.unshift(postingBaru);
-        localStorage.setItem('kilas_paud_posts', JSON.stringify(dataTersimpan));
+        // Simpan langsung ke Server Online Firebase
+        postsRef.push(postingBaru).then(() => {
+          inputPosting.value = '';
+          inputPenulis.value = '';
+          inputFotoFile.value = '';
+          inputPinPost.value = '';
 
-        // Reset Form
-        inputPosting.value = '';
-        inputPenulis.value = '';
-        inputFotoFile.value = '';
-        inputPinPost.value = '';
+          pesanSukses.classList.remove('hidden');
+          setTimeout(() => pesanSukses.classList.add('hidden'), 2500);
 
-        pesanSukses.classList.remove('hidden');
-        setTimeout(() => pesanSukses.classList.add('hidden'), 2500);
-
-        muatPostingan();
+          btnPosting.disabled = false;
+          btnPosting.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Posting Kabar';
+        }).catch(err => {
+          alert('Gagal mengirim postingan. Periksa koneksi internet Anda!');
+          btnPosting.disabled = false;
+          btnPosting.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Posting Kabar';
+        });
       };
 
       const file = inputFotoFile.files[0];
@@ -319,25 +356,21 @@
       }
     }
 
-    function hapusPostDenganPin(index) {
-      const dataTersimpan = JSON.parse(localStorage.getItem('kilas_paud_posts') || '[]');
-      const postTarget = dataTersimpan[index];
-
+    function hapusPostDenganPin(postId, targetPin) {
       const pinInput = prompt('Masukkan PIN 4 angka pembuat postingan ini (atau PIN Sakti Admin):');
 
       if (pinInput === null) return; // Batal
 
-      if (pinInput === postTarget.pin || pinInput === PIN_SAKTI_ADMIN) {
-        dataTersimpan.splice(index, 1);
-        localStorage.setItem('kilas_paud_posts', JSON.stringify(dataTersimpan));
-        alert('Postingan berhasil dihapus.');
-        muatPostingan();
+      if (pinInput === targetPin || pinInput === PIN_SAKTI_ADMIN) {
+        database.ref('posts/' + postId).remove().then(() => {
+          alert('Postingan berhasil dihapus dari server database.');
+        }).catch(err => {
+          alert('Gagal menghapus postingan. Coba lagi!');
+        });
       } else {
         alert('PIN Salah! Anda tidak berhak menghapus postingan milik orang/lembaga lain.');
       }
     }
-
-    window.onload = muatPostingan;
   </script>
 
 </body>
