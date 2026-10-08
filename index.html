@@ -2,62 +2,126 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kilas PAUD Kecamatan Leles</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body{
+  font-family:Arial,sans-serif;
+  margin:0;
+  background:#f1f5f9;
+  color:#1e293b;
+}
+.header{
+  background:linear-gradient(135deg,#0ea5e9,#22c55e);
+  color:white;
+  padding:25px 15px;
+  text-align:center;
+}
+.header h1{margin:0;font-size:26px}
+.header p{margin:8px 0 0}
+.container{
+  max-width:700px;
+  margin:20px auto;
+  padding:0 12px;
+}
+.card{
+  background:white;
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:18px;
+  box-shadow:0 3px 12px rgba(0,0,0,.08);
+}
+input,textarea{
+  width:100%;
+  box-sizing:border-box;
+  padding:12px;
+  margin:7px 0 12px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  font-size:15px;
+}
+textarea{
+  min-height:110px;
+  resize:vertical;
+}
+button{
+  width:100%;
+  padding:13px;
+  border:0;
+  border-radius:9px;
+  background:#16a34a;
+  color:white;
+  font-size:16px;
+  font-weight:bold;
+}
+button:active{background:#15803d}
+.status{
+  margin-top:12px;
+  font-weight:bold;
+  text-align:center;
+}
+.post{
+  border-top:1px solid #e2e8f0;
+  padding-top:15px;
+  margin-top:15px;
+}
+.post img{
+  width:100%;
+  border-radius:10px;
+  margin-top:10px;
+}
+.nama{
+  font-weight:bold;
+  color:#0284c7;
+}
+.tanggal{
+  font-size:12px;
+  color:#64748b;
+  margin-top:4px;
+}
+.kabar{
+  white-space:pre-wrap;
+  margin-top:10px;
+}
+</style>
 </head>
 
-<body class="bg-slate-100 p-4">
+<body>
 
-<div class="max-w-2xl mx-auto">
-
-<h1 class="text-2xl font-bold text-blue-600">
-Kilas PAUD Kecamatan Leles
-</h1>
-
-<p class="mb-4">
-Penilik: Yayan Hadiyanto, S.Pd.-MT.
-</p>
-
-<div class="bg-white p-4 rounded-xl shadow mb-4">
-
-<input id="nama"
-placeholder="Nama lembaga / PAUD"
-class="w-full border p-3 rounded mb-3">
-
-<textarea id="isi"
-placeholder="Tulis kabar PAUD..."
-class="w-full border p-3 rounded mb-3"
-rows="5"></textarea>
-
-<input id="foto"
-type="file"
-accept="image/*"
-class="w-full mb-3">
-
-<input id="pin"
-type="password"
-maxlength="4"
-placeholder="PIN 4 digit"
-class="w-full border p-3 rounded mb-3">
-
-<button onclick="posting()"
-class="w-full bg-blue-600 text-white p-3 rounded font-bold">
-POSTING KABAR
-</button>
-
-<p id="pesan" class="mt-3 text-center"></p>
-
+<div class="header">
+  <h1>Kilas PAUD Kecamatan Leles</h1>
+  <p>Berbagi kabar dan kegiatan PAUD</p>
 </div>
 
-<h2 class="text-xl font-bold mb-3">
-Kabar Terbaru
-</h2>
+<div class="container">
 
-<div id="daftar">
-Memuat...
-</div>
+  <div class="card">
+    <h2>Posting Kabar</h2>
+
+    <label>Nama / Lembaga</label>
+    <input id="nama" type="text" placeholder="Contoh: PAUD Melati">
+
+    <label>Kabar</label>
+    <textarea id="isi" placeholder="Tulis kabar atau kegiatan..."></textarea>
+
+    <label>Foto (opsional)</label>
+    <input id="foto" type="file" accept="image/*">
+
+    <label>PIN (opsional)</label>
+    <input id="pin" type="text" placeholder="PIN">
+
+    <button type="button" onclick="posting()">POSTING KABAR</button>
+
+    <div id="pesan" class="status"></div>
+  </div>
+
+  <div class="card">
+    <h2>Kabar Terbaru</h2>
+    <div id="daftar">Memuat kabar...</div>
+  </div>
 
 </div>
 
@@ -66,122 +130,238 @@ Memuat...
 const SUPABASE_URL =
 "https://hyiwkftkwacbiowooulp.supabase.co";
 
+/* GANTI TEKS DI BAWAH DENGAN PUBLISHABLE KEY ANDA */
 const SUPABASE_KEY =
 "sb_publishable_lamtyGaC7AQgNTUUUb9hsQ_ebFjuB4z";
 
 const supabaseClient =
 window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+  SUPABASE_URL,
+  SUPABASE_KEY
 );
-
-
-async function muat(){
-
-const hasil =
-await supabaseClient
-.from("posts")
-.select("*")
-.order("created_at",{ascending:false});
-
-if(hasil.error){
-
-document.getElementById("daftar").innerHTML =
-"Gagal memuat: "+hasil.error.message;
-
-return;
-}
-
-let html="";
-
-hasil.data.forEach(p=>{
-
-html+=`
-<div class="bg-white p-4 rounded-xl shadow mb-4">
-
-<b class="text-blue-600">
-${p["user-name"]||"Tanpa nama"}
-</b>
-
-<p class="text-xs text-gray-500">
-${new Date(p.created_at).toLocaleString("id-ID")}
-</p>
-
-<p class="mt-3 whitespace-pre-wrap">
-${p.content||""}
-</p>
-
-${p.image_url ?
-`<img src="${p.image_url}"
-class="w-full rounded-xl mt-3">`
-:""}
-
-</div>
-`;
-
-});
-
-document.getElementById("daftar").innerHTML =
-html || "Belum ada kabar.";
-
-}
 
 
 async function posting(){
 
-const nama =
-document.getElementById("nama").value.trim();
+  const pesan = document.getElementById("pesan");
 
-const isi =
-document.getElementById("isi").value.trim();
+  const nama =
+    document.getElementById("nama").value.trim();
 
-const pin =
-document.getElementById("pin").value.trim();
+  const isi =
+    document.getElementById("isi").value.trim();
 
-const file =
-document.getElementById("foto").files[0];
+  const pin =
+    document.getElementById("pin").value.trim();
 
-const pesan =
-document.getElementById("pesan");
+  const file =
+    document.getElementById("foto").files[0];
+
+  if(!nama || !isi){
+
+    pesan.textContent =
+      "Nama dan kabar harus diisi.";
+
+    return;
+  }
+
+  pesan.textContent = "Sedang mengirim...";
+
+  let fotoUrl = "";
+
+  try{
+
+    if(file){
+
+      const namaFile =
+        Date.now()+"-"+file.name;
+
+      const upload =
+        await supabaseClient
+        .storage
+        .from("post-images")
+        .upload(namaFile,file);
+
+      if(upload.error){
+
+        pesan.textContent =
+          "Gagal upload foto: "+
+          upload.error.message;
+
+        return;
+      }
+
+      const publicUrl =
+        supabaseClient
+        .storage
+        .from("post-images")
+        .getPublicUrl(namaFile);
+
+      fotoUrl =
+        publicUrl.data.publicUrl;
+    }
 
 
-if(!nama || !isi){
+    const simpan =
+      await supabaseClient
+      .from("posts")
+      .insert([{
 
-pesan.textContent =
-"Nama dan kabar harus diisi.";
+        "user-name": nama,
+        "content": isi,
+        "image_url": fotoUrl,
+        "pin": pin
 
-return;
+      }]);
+
+
+    if(simpan.error){
+
+      pesan.textContent =
+        "Gagal menyimpan: "+
+        simpan.error.message;
+
+      return;
+    }
+
+
+    pesan.textContent =
+      "Kabar berhasil diposting!";
+
+    document.getElementById("nama").value = "";
+    document.getElementById("isi").value = "";
+    document.getElementById("pin").value = "";
+    document.getElementById("foto").value = "";
+
+    muat();
+
+  }catch(error){
+
+    pesan.textContent =
+      "Terjadi kesalahan: "+
+      error.message;
+
+  }
+
 }
 
 
-if(!/^[0-9]{4}$/.test(pin)){
+async function muat(){
 
-pesan.textContent =
-"PIN harus 4 angka.";
+  const daftar =
+    document.getElementById("daftar");
 
-return;
+  const hasil =
+    await supabaseClient
+    .from("posts")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+
+  if(hasil.error){
+
+    daftar.textContent =
+      "Gagal memuat kabar: "+
+      hasil.error.message;
+
+    return;
+  }
+
+
+  if(!hasil.data || hasil.data.length === 0){
+
+    daftar.textContent =
+      "Belum ada kabar.";
+
+    return;
+  }
+
+
+  daftar.innerHTML = "";
+
+
+  hasil.data.forEach(post => {
+
+    const div =
+      document.createElement("div");
+
+    div.className = "post";
+
+
+    let html = "";
+
+    html +=
+      '<div class="nama">'+
+      escapeHtml(post["user-name"] || "")+
+      '</div>';
+
+    html +=
+      '<div class="tanggal">'+
+      formatTanggal(post.created_at)+
+      '</div>';
+
+    html +=
+      '<div class="kabar">'+
+      escapeHtml(post.content || "")+
+      '</div>';
+
+
+    if(post.image_url){
+
+      html +=
+        '<img src="'+
+        escapeAttribute(post.image_url)+
+        '" alt="Foto postingan">';
+    }
+
+
+    div.innerHTML = html;
+
+    daftar.appendChild(div);
+
+  });
+
 }
 
 
-pesan.textContent="Mengirim...";
+function formatTanggal(tanggal){
 
-let fotoUrl=null;
+  if(!tanggal) return "";
+
+  return new Date(tanggal)
+    .toLocaleString("id-ID",{
+      dateStyle:"medium",
+      timeStyle:"short"
+    });
+
+}
 
 
-if(file){
+function escapeHtml(teks){
 
-const namaFile =
-Date.now()+"-"+file.name;
+  return String(teks)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 
-const upload =
-await supabaseClient.storage
-.from("post-images")
-.upload(namaFile,file);
+}
 
-if(upload.error){
 
-pesan.textContent =
-"Gagal upload foto: "+
-upload.error.message;
+function escapeAttribute(teks){
 
-return;
+  return String(teks)
+    .replace(/&/g,"&amp;")
+    .replace(/"/g,"&quot;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
+}
+
+
+muat();
+
+</script>
+
+</body>
+</html>
