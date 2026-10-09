@@ -17,27 +17,28 @@ body{
 .header{
   background:linear-gradient(135deg,#0d8bdc,#19b56b);
   color:white;
-  padding:22px 15px;
+  padding:12px 10px;
   text-align:center;
   box-shadow:0 2px 8px #0002
 }
-.header h1{margin:0;font-size:25px}
+.header h1{margin:0;font-size:21px}
 .header p{margin:7px 0 0;font-size:14px}
 .container{
   max-width:720px;
   margin:auto;
-  padding:15px
+  padding:8px
 }
 .card{
   background:white;
-  border-radius:16px;
-  padding:18px;
-  margin-bottom:16px;
-  box-shadow:0 2px 10px #0001
+  border-radius:12px;
+  padding:12px;
+  margin-bottom:10px;
+  box-shadow:0 2px 8px #0001
 }
 h2{
   margin-top:0;
-  font-size:20px
+  margin-bottom:10px;
+  font-size:18px
 }
 label{
   display:block;
@@ -47,25 +48,26 @@ label{
 }
 input,textarea{
   width:100%;
-  padding:12px;
+  padding:10px;
   border:1px solid #ccd6dd;
-  border-radius:10px;
+  border-radius:8px;
   font-size:15px;
   font-family:inherit
 }
 textarea{
-  min-height:110px;
+  min-height:44px;
   resize:vertical
+  overflow-y:hidden
 }
 button{
   width:100%;
-  margin-top:14px;
-  padding:13px;
+  margin-top:8px;
+  padding:10px;
   border:0;
-  border-radius:10px;
+  border-radius:8px;
   background:#12a85a;
   color:white;
-  font-size:16px;
+  font-size:15px;
   font-weight:bold
 }
 button:active{opacity:.8}
@@ -163,7 +165,13 @@ window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+  
+const kolomKabar = document.getElementById("isi");
 
+kolomKabar.addEventListener("input", function(){
+  this.style.height = "auto";
+  this.style.height = this.scrollHeight + "px";
+});
 
 async function posting(){
 
