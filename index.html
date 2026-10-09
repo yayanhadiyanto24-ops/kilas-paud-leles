@@ -295,7 +295,7 @@ async function muat(){
     await db
     .from("posts")
     .select("*")
-    .order("created_at",{ascending:false});
+    .order("created_at",{ascending:false, nullsFirst:false});
 
 
   if(hasil.error){
