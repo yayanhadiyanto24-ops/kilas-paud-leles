@@ -324,7 +324,9 @@ async function muat(){
   daftar.innerHTML="";
 
 
-  hasil.data.forEach(post=>{
+  [...hasil.data].sort((a,b) =>
+  new Date(b.created_at || 0) - new Date(a.created_at || 0)
+).forEach(post=>{
 
     const div =
       document.createElement("div");
