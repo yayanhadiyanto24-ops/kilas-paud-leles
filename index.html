@@ -145,12 +145,27 @@ button:active{opacity:.8}
     <div id="pesan" class="status"></div>
   </div>
 
-  <div class="card">
-    <h2>📰 Kabar Terbaru</h2>
-    <div id="daftar">Memuat kabar...</div>
+  
+<div class="card">
+  <h2>📰 Kabar PAUD</h2>
+
+  <div style="display:flex; gap:10px; margin-bottom:15px;">
+    <button type="button" id="btnTerbaru"
+      onclick="pilihUrutan('terbaru')"
+      style="flex:1;">
+      🕒 Terbaru
+    </button>
+
+    <button type="button" id="btnPopuler"
+      onclick="pilihUrutan('populer')"
+      style="flex:1;">
+      🔥 Populer
+    </button>
   </div>
 
+  <div id="daftar">Memuat kabar...</div>
 </div>
+
 
 <script>
 
@@ -283,20 +298,30 @@ async function posting(){
   }
 
 }
+let urutanKabar = "terbaru";
 
+function pilihUrutan(pilihan){
+  urutanKabar = pilihan;
+  muat();
+  }
 
 async function muat(){
 
   const daftar =
     document.getElementById("daftar");
 
+let permintaan = db
+  .from("posts")
+  .select("*");
 
-  const hasil =
-    await db
-    .from("posts")
-    .select("*")
-    .order("created_at",{ascending:false, nullsFirst:false});
+if(urutanKabar === "terbaru"){
+  permintaan = permintaan.order(
+    "created_at",
+    {ascending:false, nullsFirst:false}
+  );
+}
 
+const hasil = await permintaan;
 
   if(hasil.error){
 
@@ -324,9 +349,22 @@ async function muat(){
   daftar.innerHTML="";
 
 
-  [...hasil.data].sort((a,b) =>
-  new Date(b.created_at || 0) - new Date(a.created_at || 0)
-).forEach(post=>{
+[...hasil.data].sort((a,b) => {
+  if(urutanKabar === "populer"){
+    const populerA =
+      (a.like_count || 0) + (a.comment_count || 0);
+    const populerB =
+      (b.like_count || 0) + (b.comment_count || 0);
+
+    if(populerB !== populerA){
+      return populerB - populerA;
+    }
+  }
+
+  return new Date(b.created_at || 0) -
+         new Date(a.created_at || 0);
+}).forEach(post=>{
+
 
     const div =
       document.createElement("div");
