@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kilas PAUD Kecamatan Leles</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#eef3f7;color:#263238}
+.header{background:linear-gradient(135deg,#0d8bdc,#19b56b);color:white;padding:12px 10px;text-align:center;box-shadow:0 2px 8px #0002}
+.header h1{margin:0;font-size:21px}.header p{margin:7px 0 0;font-size:14px}
+.container{max-width:720px;margin:auto;padding:8px}
+.card{background:white;border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:0 2px 8px #0001}
+h2{margin-top:0;margin-bottom:10px;font-size:18px}
+label{display:block;font-weight:bold;margin-top:10px;margin-bottom:5px}
+input,textarea{width:100%;padding:10px;border:1px solid #ccd6dd;border-radius:8px;font-size:15px;font-family:inherit}
+textarea{min-height:44px;resize:vertical;overflow-y:hidden}
+button{margin-top:8px;padding:10px;border:0;border-radius:8px;background:#12a85a;color:white;font-size:15px;font-weight:bold;cursor:pointer}
+button:active{opacity:.8}button:disabled{opacity:.6;cursor:wait}
+.status{text-align:center;margin-top:12px;font-weight:bold}
+.post{border-top:1px solid #e1e7eb;padding-top:16px;margin-top:16px}.post:first-child{border-top:0;margin-top:0;padding-top:0}
+.post-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.nama{font-size:17px;font-weight:bold;color:#087fbe;overflow-wrap:anywhere}
+.tanggal{font-size:12px;color:#718096;margin-top:4px}.kabar{margin-top:10px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.post img{width:100%;margin-top:12px;border-radius:12px;display:block}.empty{text-align:center;color:#718096;padding:20px 5px}
+.menu-wrap{position:relative;flex:0 0 auto}.menu-button{width:auto;margin:0;padding:4px 12px;background:#eaf0f4;color:#263238;font-size:22px;line-height:1.1}.menu-panel{position:absolute;right:0;top:36px;z-index:5;width:155px;background:#fff;border:1px solid #d9e1e7;border-radius:9px;box-shadow:0 4px 14px #0002;padding:5px}.menu-panel button{width:100%;margin:2px 0;text-align:left;background:#f3f6f8;color:#263238;font-size:14px}.menu-panel .hapus{color:#b42318}
+.post-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.post-actions button{width:auto;flex:1;min-width:105px;margin:0}.btn-secondary{background:#e8f2f8;color:#086a9d}.comment-area{display:none;margin-top:12px;padding:10px;background:#f6f9fb;border-radius:10px}.comment-area.open{display:block}.comment-item{padding:8px 0;border-bottom:1px solid #e1e7eb}.comment-item:last-child{border-bottom:0}.comment-name{font-weight:bold;color:#087fbe}.comment-date{font-size:11px;color:#718096}.comment-text{margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere}.comment-form{display:flex;gap:6px;margin-top:10px;align-items:flex-start}.comment-form input{min-width:0;flex:1}.comment-form button{margin:0;white-space:nowrap}.tabs{display:flex;gap:10px;margin-bottom:15px}.tabs button{flex:1;margin:0}.tabs button.active{background:#086da8}
+.small-note{font-size:12px;color:#718096;margin-top:5px}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🌿 Kilas PAUD Kecamatan Leles</h1>
+  <p>Berbagi kabar, kegiatan, dan informasi PAUD</p>
+  <p>Penilik: Yayan Hadiyanto, S.Pd.-MT.</p>
+</div>
+<div class="container">
+  <div class="card">
+    <h2>📢 Posting Kabar</h2>
+    <label for="nama">Nama / Lembaga</label>
+    <input id="nama" placeholder="Contoh: PAUD Melati">
+    <label for="isi">Kabar</label>
+    <textarea id="isi" placeholder="Tuliskan kabar atau kegiatan PAUD..."></textarea>
+    <label for="foto">Foto (opsional)</label>
+    <input id="foto" type="file" accept="image/*">
+    <label for="pin">PIN (opsional)</label>
+    <input id="pin" type="password" placeholder="PIN posting">
+    <div class="small-note">Simpan PIN postingan dengan baik. PIN diperlukan untuk mengedit atau menghapus postingan.</div>
+    <button type="button" id="btnPosting" style="width:100%" onclick="posting()">POSTING KABAR</button>
+    <div id="pesan" class="status" role="status"></div>
+  </div>
+  <div class="card">
+    <h2>📰 Kabar PAUD</h2>
+    <div class="tabs">
+      <button type="button" id="btnTerbaru" class="active" onclick="pilihUrutan('terbaru')">🕒 Terbaru</button>
+      <button type="button" id="btnPopuler" onclick="pilihUrutan('populer')">🔥 Populer</button>
+    </div>
+    <div id="daftar">Memuat kabar...</div>
+  </div>
+</div>
+<script>
+const SUPABASE_URL = "https://hyiwkftkwacbiowooulp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_lamtyGaC7AQgNTUUUb9hsQ_ebFjuB4z";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let urutanKabar = "terbaru";
+let voterId = localStorage.getItem("kilas_paud_likes_user");
+if(!voterId){
+  voterId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : ("v-"+Date.now()+"-"+Math.random().toString(36).slice(2));
+  localStorage.setItem("kilas_paud_likes_user", voterId);
+}
+const kolomKabar = document.getElementById("isi");
+kolomKabar.addEventListener("input", function(){this.style.height="auto";this.style.height=this.scrollHeight+"px";});
+
+async function posting(){
+  const pesan=document.getElementById("pesan");
+  const tombol=document.getElementById("btnPosting");
+  const nama=document.getElementById("nama").value.trim();
+  const isi=document.getElementById("isi").value.trim();
+  const pin=document.getElementById("pin").value.trim();
+  const file=document.getElementById("foto").files[0];
+  if(!nama || !isi){pesan.textContent="Nama dan kabar harus diisi.";return;}
+  pesan.textContent="Sedang mengirim...";tombol.disabled=true;
+  let fotoUrl="";
+  try{
+    if(file){
+      if(!file.type.startsWith("image/")){pesan.textContent="Pilih file gambar yang benar.";return;}
+      const namaFile=Date.now()+"-"+file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+      const upload=await db.storage.from("post-images").upload(namaFile,file);
+      if(upload.error){pesan.textContent="Gagal upload foto: "+upload.error.message;return;}
+      fotoUrl=db.storage.from("post-images").getPublicUrl(namaFile).data.publicUrl;
+    }
+    const simpan=await db.from("posts").insert([{username:nama,content:isi,image_url:fotoUrl,pin:pin}]);
+    if(simpan.error){pesan.textContent="Gagal menyimpan: "+simpan.error.message;return;}
+    pesan.textContent="✅ Kabar berhasil diposting!";
+    document.getElementById("nama").value="";document.getElementById("isi").value="";document.getElementById("isi").style.height="";document.getElementById("foto").value="";document.getElementById("pin").value="";
+    await muat();
+  }catch(error){pesan.textContent="Terjadi kesalahan: "+error.message;}
+  finally{tombol.disabled=false;}
+}
+function pilihUrutan(pilihan){urutanKabar=pilihan;document.getElementById("btnTerbaru").classList.toggle("active",pilihan==="terbaru");document.getElementById("btnPopuler").classList.toggle("active",pilihan==="populer");muat();}
+
+async function hitungTabel(tabel,postId){
+  const r=await db.from(tabel).select("id",{count:"exact",head:true}).eq("post_id",postId);
+  if(r.error){console.warn("Gagal menghitung "+tabel,r.error.message);return 0;}
+  return r.count||0;
+}
+async function ambilKomentar(postId){
+  const r=await db.from("post_comments").select("id,post_id,username,content,created_at").eq("post_id",postId).order("created_at",{ascending:true});
+  if(r.error){return {error:r.error.message,data:[]};}
+  return {error:null,data:r.data||[]};
+}
+async function muat(){
+  const daftar=document.getElementById("daftar");daftar.innerHTML="<div class='empty'>Memuat kabar...</div>";
+  const hasil=await db.from("posts").select("*");
+  if(hasil.error){daftar.innerHTML="<div class='empty'>Gagal memuat kabar: "+escapeHtml(hasil.error.message)+"</div>";return;}
+  if(!hasil.data||hasil.data.length===0){daftar.innerHTML="<div class='empty'>Belum ada kabar.</div>";return;}
+  const posts=await Promise.all(hasil.data.map(async post=>{
+    const [likes,comments]=await Promise.all([hitungTabel("post_likes",post.id),hitungTabel("post_comments",post.id)]);
+    return {...post,_likeCount:likes,_commentCount:comments};
+  }));
+  posts.sort((a,b)=>{
+    if(urutanKabar==="populer"){
+      const selisih=(b._likeCount+b._commentCount)-(a._likeCount+a._commentCount);
+      if(selisih!==0)return selisih;
+    }
+    return new Date(b.created_at||0)-new Date(a.created_at||0);
+  });
+  daftar.innerHTML="";
+  for(const post of posts){
+    const div=document.createElement("div");div.className="post";
+    const id=Number(post.id);
+    const nama=escapeHtml(post.username||"");const isi=escapeHtml(post.content||"");
+    const tanggal=post.created_at?new Date(post.created_at).toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"}):"";
+    let html="<div class='post-head'><div style='min-width:0;flex:1'><div class='nama'>"+nama+"</div><div class='tanggal'>"+escapeHtml(tanggal)+"</div></div>";
+    html+="<div class='menu-wrap'><button type='button' class='menu-button' aria-label='Menu postingan' onclick='toggleMenu("+id+")'>⋮</button><div id='menu-"+id+"' class='menu-panel' style='display:none'><button type='button' onclick='editPost("+id+")'>✏️ Edit postingan</button><button type='button' class='hapus' onclick='hapusPost("+id+")'>🗑️ Hapus postingan</button></div></div></div>";
+    html+="<div class='kabar'>"+isi+"</div>";
+    if(post.image_url){html+="<img src='"+escapeAttribute(post.image_url)+"' alt='Foto kegiatan PAUD' loading='lazy'>";}
+    html+="<div class='post-actions'><button type='button' class='btn-secondary' onclick='beriSuka("+id+")'>❤️ Suka <span id='jumlah-suka-"+id+"'>"+post._likeCount+"</span></button><button type='button' class='btn-secondary' onclick='toggleKomentar("+id+")'>💬 Komentar <span id='jumlah-komentar-"+id+"'>"+post._commentCount+"</span></button></div>";
+    html+="<div class='comment-area' id='komentar-area-"+id+"'><div id='komentar-list-"+id+"' class='small-note'>Memuat komentar...</div><label for='komentar-nama-"+id+"'>Nama</label><input id='komentar-nama-"+id+"' maxlength='100' placeholder='Nama Anda'><label for='komentar-isi-"+id+"'>Komentar</label><textarea id='komentar-isi-"+id+"' rows='2' maxlength='2000' placeholder='Tulis komentar...'></textarea><button type='button' style='width:100%' onclick='kirimKomentar("+id+")'>Kirim komentar</button><div id='komentar-pesan-"+id+"' class='small-note' role='status'></div></div>";
+    div.innerHTML=html;daftar.appendChild(div);
+  }
+}
+async function beriSuka(postId){
+  const hasil=await db.from("post_likes").insert({post_id:postId,voter_id:voterId});
+  if(hasil.error){if(hasil.error.code==="23505"){alert("Anda sudah menyukai kabar ini dari browser/perangkat ini.");}else{alert("Gagal memberi Suka: "+hasil.error.message);}return;}
+  const jumlah=await hitungTabel("post_likes",postId);const angka=document.getElementById("jumlah-suka-"+postId);if(angka)angka.textContent=jumlah;
+  if(urutanKabar==="populer")await muat();
+}
+async function toggleKomentar(postId){
+  const area=document.getElementById("komentar-area-"+postId);if(!area)return;
+  const buka=!area.classList.contains("open");area.classList.toggle("open",buka);
+  if(buka)await muatKomentar(postId);
+}
+async function muatKomentar(postId){
+  const list=document.getElementById("komentar-list-"+postId);if(!list)return;list.textContent="Memuat komentar...";
+  const hasil=await ambilKomentar(postId);
+  if(hasil.error){list.textContent="Gagal memuat komentar: "+hasil.error;return;}
+  if(!hasil.data.length){list.innerHTML="<div class='small-note'>Belum ada komentar.</div>";return;}
+  list.innerHTML=hasil.data.map(k=>"<div class='comment-item'><div class='comment-name'>"+escapeHtml(k.username||"Pengunjung")+"</div><div class='comment-date'>"+escapeHtml(k.created_at?new Date(k.created_at).toLocaleString("id-ID",{dateStyle:"medium",timeStyle:"short"}):"")+"</div><div class='comment-text'>"+escapeHtml(k.content||"")+"</div></div>").join("");
+}
+async function kirimKomentar(postId){
+  const namaEl=document.getElementById("komentar-nama-"+postId),isiEl=document.getElementById("komentar-isi-"+postId),pesan=document.getElementById("komentar-pesan-"+postId);
+  const username=namaEl.value.trim(),content=isiEl.value.trim();if(!username||!content){pesan.textContent="Nama dan komentar harus diisi.";return;}
+  pesan.textContent="Mengirim komentar...";
+  const hasil=await db.from("post_comments").insert({post_id:postId,username,content});
+  if(hasil.error){pesan.textContent="Gagal mengirim komentar: "+hasil.error.message;return;}
+  isiEl.value="";pesan.textContent="Komentar berhasil dikirim.";await muatKomentar(postId);
+  const jumlah=await hitungTabel("post_comments",postId);const angka=document.getElementById("jumlah-komentar-"+postId);if(angka)angka.textContent=jumlah;
+  if(urutanKabar==="populer")await muat();
+}
+function toggleMenu(postId){const menu=document.getElementById("menu-"+postId);if(!menu)return;const akanBuka=menu.style.display==="none";document.querySelectorAll(".menu-panel").forEach(m=>m.style.display="none");menu.style.display=akanBuka?"block":"none";}
+async function editPost(postId){
+  const menu=document.getElementById("menu-"+postId);if(menu)menu.style.display="none";
+  const pin=prompt("Masukkan PIN yang dibuat saat memposting kabar ini:");if(pin===null)return;if(!pin.trim()){alert("PIN tidak boleh kosong.");return;}
+  const namaBaru=prompt("Nama / lembaga baru:");if(namaBaru===null)return;if(!namaBaru.trim()){alert("Nama tidak boleh kosong.");return;}
+  const isiBaru=prompt("Isi kabar baru:");if(isiBaru===null)return;if(!isiBaru.trim()){alert("Isi kabar tidak boleh kosong.");return;}
+  const hasil=await db.rpc("edit_post_with_pin",{p_post_id:postId,p_pin:pin.trim(),p_username:namaBaru.trim(),p_content:isiBaru.trim()});
+  if(hasil.error){alert("Gagal mengedit. Pastikan fungsi database sudah disiapkan. Detail: "+hasil.error.message);return;}
+  if(hasil.data!==true){alert("PIN tidak cocok atau postingan tidak ditemukan.");return;}
+  alert("Postingan berhasil diperbarui.");await muat();
+}
+async function hapusPost(postId){
+  const menu=document.getElementById("menu-"+postId);if(menu)menu.style.display="none";
+  if(!confirm("Yakin ingin menghapus postingan ini? Like dan komentar yang terkait juga akan ikut terhapus."))return;
+  const pin=prompt("Masukkan PIN yang dibuat saat memposting kabar ini:");if(pin===null)return;if(!pin.trim()){alert("PIN tidak boleh kosong.");return;}
+  const hasil=await db.rpc("delete_post_with_pin",{p_post_id:postId,p_pin:pin.trim()});
+  if(hasil.error){alert("Gagal menghapus. Pastikan fungsi database sudah disiapkan. Detail: "+hasil.error.message);return;}
+  if(hasil.data!==true){alert("PIN tidak cocok atau postingan tidak ditemukan.");return;}
+  alert("Postingan berhasil dihapus.");await muat();
+}
+function escapeHtml(teks){return String(teks).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+function escapeAttribute(teks){return String(teks).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/'/g,"&#039;");}
+muat();
+</script>
+</body>
+</html>
