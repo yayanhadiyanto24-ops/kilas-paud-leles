@@ -414,6 +414,15 @@ const hasil = await permintaan;
         "' alt='Foto kegiatan PAUD'>";
     }
 
+    const tombolSuka =
+      "<div style='margin-top:12px'>"+
+      "<button type='button' onclick='beriSuka("+post.id+")'>"+
+      "❤️ Suka <span id='jumlah-suka-"+post.id+"'>0</span>"+
+      "</button>"+
+      "</div>";
+
+    html += tombolSuka;
+
 
     div.innerHTML=html;
 
@@ -421,6 +430,43 @@ const hasil = await permintaan;
 
   });
 
+}
+
+async function beriSuka(postId){
+  let voterId = localStorage.getItem("kilas_paud_likes_user");
+
+  if(!voterId){
+    voterId = crypto.randomUUID();
+    localStorage.setItem("kilas_paud_likes_user", voterId);
+  }
+
+  const hasil = await db
+    .from("post_likes")
+    .insert({
+      post_id: postId,
+      voter_id: voterId
+    });
+
+  if(hasil.error){
+    if(hasil.error.code === "23505"){
+      alert("Anda sudah menyukai kabar ini.");
+    } else {
+      alert("Gagal memberi Suka: " + hasil.error.message);
+    }
+    return;
+  }
+
+  const jumlah = await db
+    .from("post_likes")
+    .select("*", {count:"exact", head:true})
+    .eq("post_id", postId);
+
+  if(!jumlah.error){
+    const angka = document.getElementById("jumlah-suka-" + postId);
+    if(angka){
+      angka.textContent = jumlah.count || 0;
+    }
+  }
 }
 
 
