@@ -1,151 +1,819 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#16834a">
 <title>KIPA Leles — Kilas Informasi PAUD</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--green:#16834a;--green-dark:#10683a;--green-soft:#eaf7ee;--green-pale:#f5fbf6;--yellow:#f4c84a;--ink:#24332a;--muted:#718078;--line:#e4ebe6;--white:#fff;--shadow:0 2px 10px #153d2410}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#f3f6f4;color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-size:15px}
-button,input,textarea{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{opacity:.6;cursor:wait}
-.topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;box-shadow:0 2px 8px #12301a08}.top-inner{max-width:760px;margin:auto;padding:10px 13px;display:flex;align-items:center;gap:10px}.brand-mark{width:43px;height:43px;border-radius:14px;background:var(--green-soft);display:grid;place-items:center;font-size:24px;flex-shrink:0}.brand{min-width:0;flex:1}.brand h1{margin:0;color:var(--green-dark);font-size:19px;line-height:1.2;letter-spacing:.2px}.brand p{margin:3px 0 0;color:var(--muted);font-size:11px;line-height:1.3}.identity{font-size:10px;line-height:1.35;color:#52645a;margin-top:4px}.identity strong{display:block;color:var(--green-dark);font-size:11px}.bell-wrap{position:relative;flex-shrink:0}.bell{width:42px;height:42px;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--green-dark);font-size:20px;position:relative}.bell-dot{position:absolute;right:8px;top:7px;width:8px;height:8px;background:var(--yellow);border:2px solid white;border-radius:50%}.bell.has-notice{background:var(--green-soft);border-color:#a8d6b5}.bell.has-notice .bell-dot{background:#e34d59;width:10px;height:10px}.notification-panel{display:none;position:absolute;right:0;top:49px;width:min(330px,calc(100vw - 24px));max-height:65vh;overflow:auto;z-index:50;padding:12px;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 8px 28px #17342124;font-size:13px;line-height:1.45}.notification-panel.open{display:block}
-.container{max-width:760px;margin:auto;padding:12px 10px 32px}.quick-links{display:flex;gap:8px;margin:0 0 12px}.rank-jump{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #b8dec2;border-radius:11px;padding:9px 12px;background:var(--green-soft);color:var(--green-dark);font-size:13px;font-weight:800;box-shadow:0 1px 3px #153d2408}.rank-jump:active{background:#d9f0df}.tagline{font-size:12px;color:var(--green-dark);background:var(--green-soft);border:1px solid #d9efdf;border-radius:12px;padding:9px 12px;margin:0 0 12px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}.card-title{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:16px;font-weight:750}.title-icon{width:30px;height:30px;border-radius:10px;background:var(--green-soft);display:grid;place-items:center;font-size:16px}.form-grid{display:grid;grid-template-columns:1fr;gap:10px}label{display:block;font-size:12px;font-weight:700;color:#53645a;margin:0 0 5px}input,textarea{width:100%;padding:11px 12px;border:1px solid #d9e3dc;border-radius:11px;background:#fcfdfc;color:var(--ink);outline:none;min-width:0}input:focus,textarea:focus{border-color:#62b782;box-shadow:0 0 0 3px #16834a15}textarea{min-height:82px;resize:vertical;line-height:1.45}input[type=file]{padding:9px;font-size:13px;background:#fff}.optional{font-size:11px;color:var(--muted);font-weight:400}.primary{width:100%;border:0;border-radius:11px;padding:12px;background:var(--green);color:#fff;font-weight:750;box-shadow:0 3px 0 #0e6838}.primary:active{transform:translateY(1px);box-shadow:none}.status{font-size:12px;margin-top:9px;line-height:1.4;color:var(--green-dark);overflow-wrap:anywhere}.status.error{color:#b42318}.search-row{display:flex;gap:8px;margin-bottom:11px}.search-wrap{position:relative;flex:1;min-width:0}.search-wrap span{position:absolute;left:12px;top:10px}.search-wrap input{padding-left:36px;background:#f9fbf9}.clear-search{border:1px solid var(--line);border-radius:10px;background:white;color:var(--green-dark);padding:0 12px;font-size:13px;font-weight:700}.tabs{display:flex;gap:7px;background:#f0f5f1;padding:4px;border-radius:12px;margin-bottom:13px}.tabs button{flex:1;border:0;border-radius:9px;padding:10px 8px;background:transparent;color:#607067;font-weight:700;font-size:13px}.tabs button.active{background:#fff;color:var(--green-dark);box-shadow:0 1px 5px #102d1a13}.feed-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.feed-head .card-title{margin-bottom:10px}.tiny-count{font-size:11px;color:var(--muted);white-space:nowrap}.post{padding:14px 0;border-top:1px solid var(--line)}.post:first-child{border-top:0;padding-top:0}.post-head{display:flex;align-items:flex-start;gap:9px}.avatar{width:39px;height:39px;border-radius:13px;background:var(--green-soft);display:grid;place-items:center;color:var(--green-dark);font-weight:800;flex-shrink:0}.post-person{flex:1;min-width:0}.nama{font-size:14px;font-weight:800;color:#245d39;overflow-wrap:anywhere}.tanggal{font-size:11px;color:var(--muted);margin-top:3px}.menu-wrap{position:relative}.menu-button{width:35px;height:35px;border:1px solid var(--line);border-radius:10px;background:white;color:#65756a;font-size:22px;line-height:1}.menu-panel{position:absolute;right:0;top:38px;z-index:5;width:170px;background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:0 6px 20px #0002;padding:5px}.menu-panel button{width:100%;border:0;background:#fff;text-align:left;padding:10px;border-radius:7px;color:var(--ink);font-size:13px}.menu-panel button:active{background:var(--green-soft)}.menu-panel .hapus{color:#b42318}.kabar{margin:10px 0 0;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}.post-image{width:100%;max-height:520px;object-fit:contain;background:#f5f8f5;border-radius:12px;margin-top:11px;display:block}.post-file{display:flex;align-items:center;gap:10px;margin-top:11px;padding:12px;border:1px solid #dce9df;background:#f6fbf7;border-radius:12px;overflow-wrap:anywhere}.post-file a{color:var(--green-dark);font-weight:750;text-decoration:none;overflow-wrap:anywhere}.post-file a:hover{text-decoration:underline}.post-actions{display:flex;gap:8px;margin-top:12px}.post-actions button{flex:1;min-width:0;border:1px solid #dce9df;border-radius:10px;background:#f4faf5;color:#376347;padding:10px 6px;font-size:13px;font-weight:700}.post-actions button:active{background:#e1f3e6}.comment-area{display:none;margin-top:11px;padding:11px;background:var(--green-pale);border:1px solid #e0efe4;border-radius:12px}.comment-area.open{display:block}.comment-item{padding:9px 0;border-bottom:1px solid #e2ebe4}.comment-item:last-child{border-bottom:0}.comment-name{font-weight:750;color:#245d39;font-size:13px}.comment-date{font-size:10px;color:var(--muted);margin-top:2px}.comment-text{margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}.comment-form{display:grid;gap:8px;margin-top:10px}.comment-form button{border:0;background:var(--green);color:white;border-radius:9px;padding:10px;font-weight:700}.small-note{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.4}.empty{text-align:center;color:var(--muted);padding:24px 8px;font-size:13px}.rank-placeholder{background:linear-gradient(135deg,#f1faf3,#fff);border:1px dashed #b7d9c1;border-radius:13px;padding:13px}.rank-title{font-weight:800;color:var(--green-dark);font-size:14px}.rank-placeholder p{margin:5px 0 0;font-size:12px;color:#607067;line-height:1.45}.footnote{text-align:center;color:#8a968e;font-size:11px;padding:4px 0 14px}
-@media(min-width:600px){.container{padding:18px 14px 36px}.top-inner{padding:12px 16px}.form-grid.two{grid-template-columns:1fr 1fr}.card{padding:17px}.comment-form{grid-template-columns:1fr 1fr auto;align-items:start}.comment-form button{white-space:nowrap}}
+:root{--g:#16834a;--gd:#10683a;--gs:#eaf7ee;--gp:#f5fbf6;--ink:#24332a;--muted:#718078;--line:#e4ebe6;--white:#fff;--shadow:0 2px 10px #153d2410}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{margin:0;background:#f3f6f4;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;font-size:14px}
+button,input,textarea{font:inherit}
+button{cursor:pointer;touch-action:manipulation}
+button:disabled{opacity:.6;cursor:wait}
+.topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;box-shadow:0 2px 8px #12301a08}
+.top-inner{max-width:760px;margin:auto;padding:9px 12px;display:flex;align-items:center;gap:9px}
+.brand-mark{width:39px;height:39px;flex-shrink:0;border-radius:12px;background:var(--gs);display:grid;place-items:center;font-size:22px}
+.brand{flex:1;min-width:0}
+.brand h1{margin:0;color:var(--gd);font-size:19px;line-height:1.15}
+.brand p{margin:3px 0 0;color:var(--muted);font-size:10px;line-height:1.3}
+.identity{font-size:10px;line-height:1.3;color:var(--gd);margin-top:4px;overflow-wrap:anywhere}
+.identity strong{font-size:11px}
+.header-search{width:125px;flex-shrink:0;position:relative}
+.header-search input{width:100%;min-width:0;padding:9px 8px 9px 27px;border:1px solid var(--line);border-radius:10px;background:#f9fbf9;font-size:12px}
+.search-icon{position:absolute;left:9px;top:7px;color:var(--gd);font-size:18px;pointer-events:none}
+.bell-wrap{position:relative;flex-shrink:0}
+.bell{width:39px;height:39px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--gd);font-size:20px;position:relative}
+.bell-dot{position:absolute;right:7px;top:6px;width:8px;height:8px;background:#f4c84a;border:2px solid white;border-radius:50%}
+.bell.has-notice{background:var(--gs);border-color:#a8d6b5}
+.bell.has-notice .bell-dot{background:#e34d59;width:10px;height:10px}
+.notification-panel{display:none;position:absolute;right:0;top:46px;width:min(330px,calc(100vw - 20px));max-height:65vh;overflow:auto;z-index:50;padding:12px;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 8px 28px #17342124;font-size:13px;line-height:1.45}
+.notification-panel.open{display:block}
+.container{max-width:760px;margin:auto;padding:11px 10px 30px}
+.tagline{font-size:12px;color:var(--gd);background:var(--gs);border:1px solid #d9efdf;border-radius:11px;padding:9px 11px;margin:0 0 11px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:11px;box-shadow:var(--shadow)}
+.card-title{display:flex;align-items:center;gap:8px;margin:0 0 11px;font-size:15px;font-weight:800}
+.title-icon{width:29px;height:29px;flex-shrink:0;border-radius:9px;background:var(--gs);display:grid;place-items:center;font-size:16px;color:var(--gd);border:0}
+.title-toggle{width:29px;height:29px;flex-shrink:0;border-radius:9px;background:var(--gs);display:grid;place-items:center;font-size:19px;color:var(--gd);border:0}
+.form-heading{display:flex;align-items:center;gap:8px;width:100%;padding:0;border:0;background:none;color:var(--ink);text-align:left}
+.form-heading .card-title{flex:1;margin:0}
+.form-toggle-label{font-size:11px;font-weight:750;color:var(--gd);white-space:nowrap}
+.form-grid{display:grid;grid-template-columns:1fr;gap:10px}
+label{display:block;font-size:12px;font-weight:700;color:#53645a;margin:0 0 5px}
+input,textarea{width:100%;padding:10px 11px;border:1px solid #d9e3dc;border-radius:10px;background:#fcfdfc;color:var(--ink);outline:none;min-width:0}
+input:focus,textarea:focus{border-color:#62b782;box-shadow:0 0 0 3px #16834a15}
+textarea{min-height:78px;resize:vertical;line-height:1.45}
+input[type=file]{padding:8px;font-size:12px;background:#fff}
+.optional{font-size:11px;color:var(--muted);font-weight:400}
+.primary{width:100%;border:0;border-radius:10px;padding:12px;background:var(--g);color:#fff;font-weight:750;box-shadow:0 2px 0 #0e6838}
+.primary:active{transform:translateY(1px);box-shadow:none}
+.status{font-size:12px;margin-top:8px;line-height:1.4;color:var(--gd);overflow-wrap:anywhere}
+.status.error{color:#b42318}
+.rank-jump{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid #b8dec2;border-radius:10px;padding:8px 10px;background:var(--gs);color:var(--gd);font-size:12px;font-weight:800}
+.rank-placeholder{background:linear-gradient(135deg,#f1faf3,#fff);border:1px dashed #b7d9c1;border-radius:12px;padding:11px}
+.rank-title{font-weight:800;color:var(--gd);font-size:13px}
+.rank-placeholder p{margin:5px 0 0;font-size:12px;color:#607067;line-height:1.45}
+.feed-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.feed-head .card-title{margin-bottom:10px}
+.tiny-count{font-size:11px;color:var(--muted);white-space:nowrap}
+.tabs{display:flex;gap:6px;background:#f0f5f1;padding:4px;border-radius:11px;margin-bottom:11px}
+.tabs button{flex:1;border:0;border-radius:8px;padding:9px 6px;background:transparent;color:#607067;font-weight:700;font-size:12px}
+.tabs button.active{background:#fff;color:var(--gd);box-shadow:0 1px 5px #102d1a13}
+.post{padding:12px 0;border-top:1px solid var(--line)}
+.post:first-child{border-top:0;padding-top:0}
+.post-head{display:flex;align-items:flex-start;gap:9px}
+.avatar{width:37px;height:37px;border-radius:11px;background:var(--gs);display:grid;place-items:center;color:var(--gd);font-weight:800;flex-shrink:0}
+.post-person{flex:1;min-width:0}
+.nama{font-size:13px;font-weight:800;color:#245d39;overflow-wrap:anywhere}
+.tanggal{font-size:10px;color:var(--muted);margin-top:3px}
+.menu-wrap{position:relative}
+.menu-button{width:33px;height:33px;border:1px solid var(--line);border-radius:9px;background:white;color:#65756a;font-size:21px;line-height:1}
+.menu-panel{position:absolute;right:0;top:36px;z-index:5;width:165px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 20px #0002;padding:5px}
+.menu-panel button{width:100%;border:0;background:#fff;text-align:left;padding:10px;border-radius:7px;color:var(--ink);font-size:12px}
+.menu-panel button:active{background:var(--gs)}
+.menu-panel .hapus{color:#b42318}
+.kabar{margin:9px 0 0;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.post-image{width:100%;max-height:500px;object-fit:contain;background:#f5f8f5;border-radius:11px;margin-top:10px;display:block}
+.post-file{display:flex;align-items:center;gap:10px;margin-top:10px;padding:11px;border:1px solid #dce9df;background:#f6fbf7;border-radius:11px;overflow-wrap:anywhere}
+.post-file a{color:var(--gd);font-weight:750;text-decoration:none;overflow-wrap:anywhere}
+.post-actions{display:flex;gap:7px;margin-top:10px}
+.post-actions button{flex:1;min-width:0;border:1px solid #dce9df;border-radius:9px;background:#f4faf5;color:#376347;padding:9px 5px;font-size:12px;font-weight:700}
+.post-actions button:active{background:#e1f3e6}
+.comment-area{display:none;margin-top:10px;padding:10px;background:var(--gp);border:1px solid #e0efe4;border-radius:11px}
+.comment-area.open{display:block}
+.comment-item{padding:8px 0;border-bottom:1px solid #e2ebe4}
+.comment-item:last-child{border-bottom:0}
+.comment-name{font-weight:750;color:#245d39;font-size:12px}
+.comment-date{font-size:10px;color:var(--muted);margin-top:2px}
+.comment-text{margin-top:4px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px}
+.comment-form{display:grid;gap:8px;margin-top:10px}
+.comment-form button{border:0;background:var(--g);color:white;border-radius:9px;padding:10px;font-weight:700}
+.small-note{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.4}
+.empty{text-align:center;color:var(--muted);padding:22px 8px;font-size:12px}
+.footnote{text-align:center;color:#8a968e;font-size:11px;padding:4px 0 14px}
+@media(min-width:600px){
+ .container{padding:16px 14px 34px}
+ .top-inner{padding:11px 16px}
+ .form-grid.two{grid-template-columns:1fr 1fr}
+ .card{padding:15px}
+ .comment-form{grid-template-columns:1fr 1fr auto;align-items:start}
+ .comment-form button{white-space:nowrap}
+}
+@media(max-width:370px){
+ .top-inner{gap:6px;padding:8px}
+ .brand-mark{width:33px;height:33px;font-size:19px}
+ .brand h1{font-size:17px}
+ .brand p{font-size:9px}
+ .identity,.identity strong{font-size:9px}
+ .header-search{width:86px}
+ .header-search input{font-size:11px;padding-left:25px}
+ .bell{width:34px;height:34px}
+ .search-icon{top:6px}
+}
 </style>
 </head>
 <body>
-<header class="topbar"><div class="top-inner"><div class="brand-mark" aria-hidden="true">🌿</div><div class="brand"><h1>KIPA Leles</h1><p>Kilas Informasi PAUD · Menebar Kabar, Berbagi Inspirasi</p><div class="identity">Penilik PAUD/Dikmas<strong>Yayan Hadiyanto, S.Pd.-MT.</strong></div></div><div class="bell-wrap"><button class="bell" type="button" id="btnLonceng" aria-label="Buka informasi notifikasi" aria-expanded="false" onclick="toggleNotifikasi()">♧<span class="bell-dot" aria-hidden="true"></span></button><section class="notification-panel" id="panelNotifikasi" aria-live="polite"><strong>🔔 Notifikasi KIPA</strong><div id="daftarNotifikasi" style="margin-top:8px"><div class="small-note">Menyiapkan pemantauan aktivitas terbaru...</div></div><button type="button" class="clear-search" style="margin-top:10px;padding:8px 10px" onclick="hapusNotifikasiLayar()">Bersihkan notifikasi</button><div class="small-note">Notifikasi realtime aktif selama halaman terbuka dan koneksi tersedia.</div></section></div></div></header>
+
+<header class="topbar">
+ <div class="top-inner">
+  <div class="brand-mark" aria-hidden="true">🌿</div>
+  <div class="brand">
+   <h1>KIPA Leles</h1>
+   <p>Kilas Informasi PAUD · Menebar Kabar, Berbagi Inspirasi</p>
+   <div class="identity">Penilik: <strong>Yayan Hadiyanto, S.Pd.-MT.</strong></div>
+  </div>
+  <div class="header-search">
+   <span class="search-icon" aria-hidden="true">⌕</span>
+   <input id="pencarian" type="search" placeholder="Cari kabar..." aria-label="Cari nama lembaga atau kabar" oninput="tampilkanKabar()">
+  </div>
+  <div class="bell-wrap">
+   <button class="bell" type="button" id="btnLonceng" aria-label="Buka notifikasi" aria-expanded="false" onclick="toggleNotifikasi()">♧<span class="bell-dot" aria-hidden="true"></span></button>
+   <section class="notification-panel" id="panelNotifikasi" aria-live="polite">
+    <strong>🔔 Notifikasi KIPA</strong>
+    <div id="daftarNotifikasi" style="margin-top:8px"><div class="small-note">Menyiapkan notifikasi...</div></div>
+    <button type="button" class="rank-jump" style="margin-top:10px" onclick="hapusNotifikasiLayar()">Bersihkan notifikasi</button>
+    <div class="small-note">Notifikasi realtime selama halaman terbuka dan koneksi tersedia.</div>
+   </section>
+  </div>
+ </div>
+</header>
+
 <main class="container">
-<div class="tagline">🌱 Ruang berbagi kabar, kegiatan, dan inspirasi PAUD Kecamatan Leles.</div>
-<div class="quick-links"><button type="button" class="rank-jump" onclick="toggleBagianPeringkat()">🏅 Peringkat Keaktifan <span id="panahPeringkat">↓</span></button></div>
-<section class="card" id="bagianPeringkat" aria-labelledby="judulPeringkat" style="scroll-margin-top:82px"><h2 class="card-title" id="judulPeringkat"><span class="title-icon">🏅</span> Peringkat Keaktifan</h2><div class="rank-placeholder"><div class="rank-title">🏆 Anggota aktif KIPA Leles</div><p>Poin dihitung dari unggahan, komentar, dan Suka yang memiliki nama anggota.</p><div id="daftarPeringkat" style="margin-top:10px"><div class="small-note">Menghitung keaktifan...</div></div><button type="button" id="btnSemuaPeringkat" class="rank-jump" style="width:100%;margin-top:10px" onclick="toggleSemuaPeringkat()">Tampilkan semua anggota ↓</button></div></section>
-<section class="card" aria-labelledby="judulPosting"><h2 class="card-title" id="judulPosting"><span class="title-icon">✍️</span> Bagikan kabar</h2>
-<div class="form-grid"><div><label for="nama">Nama / lembaga</label><input id="nama" maxlength="120" placeholder="Contoh: PAUD Melati" autocomplete="organization"></div><div><label for="isi">Ceritakan kegiatan <span class="optional">(wajib)</span></label><textarea id="isi" maxlength="10000" placeholder="Apa kabar baik dari PAUD hari ini?"></textarea></div><div class="form-grid two"><div><label for="foto">Foto atau dokumen <span class="optional">(opsional, maks. 8 MB)</span></label><input id="foto" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,image/jpeg,image/png,image/webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,text/csv"></div><div><label for="pin">PIN postingan <span class="optional">(untuk edit/hapus)</span></label><input id="pin" type="password" maxlength="100" placeholder="Buat PIN postingan" autocomplete="new-password"></div></div><button type="button" id="btnPosting" class="primary" onclick="posting()">＋ POSTING KABAR</button><div id="pesan" class="status" role="status" aria-live="polite"></div><div class="small-note">PIN tidak ditampilkan di kabar. Simpan PIN dengan baik agar postingan dapat diedit atau dihapus.</div></div></section>
-<section class="card" aria-labelledby="judulKabar"><div class="feed-head"><h2 class="card-title" id="judulKabar"><span class="title-icon">📰</span> Kabar PAUD</h2><span id="jumlahKabar" class="tiny-count"></span></div>
-<div class="search-row"><div class="search-wrap"><span aria-hidden="true">⌕</span><input id="pencarian" type="search" placeholder="Cari nama lembaga atau kabar..." aria-label="Cari kabar" oninput="tampilkanKabar()"></div><button class="clear-search" type="button" onclick="bersihkanPencarian()">Hapus</button></div>
-<div class="tabs" role="group" aria-label="Urutan kabar"><button type="button" id="btnTerbaru" class="active" onclick="pilihUrutan('terbaru')">◷ Terbaru</button><button type="button" id="btnPopuler" onclick="pilihUrutan('populer')">♥ Terpopuler</button></div>
-<div id="daftar" aria-live="polite"><div class="empty">Menghubungkan ke KIPA Leles...</div></div></section>
-<div class="footnote">KIPA Leles · Menebar Kabar, Berbagi Inspirasi</div>
+ <div class="tagline">🌱 Ruang berbagi kabar, kegiatan, dan inspirasi PAUD Kecamatan Leles.</div>
+
+ <section class="card" id="bagianPeringkat" aria-labelledby="judulPeringkat" style="display:none">
+  <h2 class="card-title" id="judulPeringkat"><span class="title-icon">🏅</span>Peringkat Keaktifan</h2>
+  <div class="rank-placeholder">
+   <div class="rank-title">🏆 Anggota aktif KIPA Leles</div>
+   <p>Poin dihitung dari unggahan, komentar, dan Suka yang memiliki nama anggota.</p>
+   <div id="daftarPeringkat" style="margin-top:9px"><div class="small-note">Menghitung keaktifan...</div></div>
+   <button type="button" id="btnSemuaPeringkat" class="rank-jump" style="width:100%;margin-top:9px" onclick="toggleSemuaPeringkat()">Tampilkan semua anggota ↓</button>
+  </div>
+ </section>
+
+ <div style="margin-bottom:10px">
+  <button type="button" class="rank-jump" onclick="toggleBagianPeringkat()">🏅 Peringkat Keaktifan <span id="panahPeringkat">↓</span></button>
+ </div>
+
+ <section class="card" aria-labelledby="judulPosting">
+  <button type="button" class="form-heading" id="toggleFormPosting" aria-expanded="false" aria-controls="isiFormPosting" onclick="toggleBagikanKabar()">
+   <span class="title-toggle" id="ikonForm">＋</span>
+   <h2 class="card-title" id="judulPosting">Bagikan kabar</h2>
+   <span class="form-toggle-label" id="labelForm">Buka formulir ↓</span>
+  </button>
+
+  <div id="isiFormPosting" style="display:none;margin-top:13px">
+   <div class="form-grid">
+    <div>
+     <label for="nama">Nama / lembaga</label>
+     <input id="nama" maxlength="120" placeholder="Contoh: PAUD Melati" autocomplete="organization">
+    </div>
+    <div>
+     <label for="isi">Ceritakan kegiatan <span class="optional">(wajib)</span></label>
+     <textarea id="isi" maxlength="10000" placeholder="Apa kabar baik dari PAUD hari ini?"></textarea>
+    </div>
+    <div class="form-grid two">
+     <div>
+      <label for="foto">Foto atau dokumen <span class="optional">(opsional, maks. 8 MB)</span></label>
+      <input id="foto" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,image/jpeg,image/png,image/webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,text/csv">
+     </div>
+     <div>
+      <label for="pin">PIN postingan <span class="optional">(untuk edit/hapus)</span></label>
+      <input id="pin" type="password" maxlength="100" placeholder="Buat PIN postingan" autocomplete="new-password">
+     </div>
+    </div>
+    <button type="button" id="btnPosting" class="primary" onclick="posting()">＋ POSTING KABAR</button>
+    <div id="pesan" class="status" role="status" aria-live="polite"></div>
+    <div class="small-note">PIN tidak ditampilkan di kabar. Simpan PIN dengan baik agar postingan dapat diedit atau dihapus.</div>
+   </div>
+  </div>
+ </section>
+
+ <section class="card" aria-labelledby="judulKabar">
+  <div class="feed-head">
+   <h2 class="card-title" id="judulKabar"><span class="title-icon">📰</span>Kabar PAUD</h2>
+   <span id="jumlahKabar" class="tiny-count"></span>
+  </div>
+  <div class="tabs" role="group" aria-label="Urutan kabar">
+   <button type="button" id="btnTerbaru" class="active" onclick="pilihUrutan('terbaru')">◷ Terbaru</button>
+   <button type="button" id="btnPopuler" onclick="pilihUrutan('populer')">♥ Terpopuler</button>
+  </div>
+  <div id="daftar" aria-live="polite"><div class="empty">Menghubungkan ke KIPA Leles...</div></div>
+ </section>
+
+ <div class="footnote">KIPA Leles · Menebar Kabar, Berbagi Inspirasi</div>
 </main>
+
 <script>
 'use strict';
+
 const SUPABASE_URL='https://hyiwkftkwacbiowooulp.supabase.co';
 const SUPABASE_KEY='sb_publishable_lamtyGaC7AQgNTUUUb9hsQ_ebFjuB4z';
-const BUCKET='post-images',MAX_FILE_SIZE=8*1024*1024;
+const BUCKET='post-images';
+const MAX_FILE_SIZE=8*1024*1024;
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','pdf','doc','docx','xls','xlsx','ppt','pptx','txt','csv']);
 const IMAGE_EXT=new Set(['jpg','jpeg','png','webp']);
-let db=null,urutanKabar='terbaru',semuaKabar=[],voterId=null,notifikasiTerbaru=[],realtimeChannel=null,peringkatDiperluas=false,peringkatTerbuka=true;
-try{voterId=localStorage.getItem('kilas_paud_likes_user');}catch(e){}
-if(!voterId){voterId=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'v-'+Date.now()+'-'+Math.random().toString(36).slice(2);try{localStorage.setItem('kilas_paud_likes_user',voterId);}catch(e){}}
+
+let db=null;
+let urutanKabar='terbaru';
+let semuaKabar=[];
+let voterId=null;
+let notifikasiTerbaru=[];
+let realtimeChannel=null;
+let peringkatDiperluas=false;
+let peringkatTerbuka=false;
+
+try{voterId=localStorage.getItem('kilas_paud_likes_user')}catch(e){}
+if(!voterId){
+ voterId=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'v-'+Date.now()+'-'+Math.random().toString(36).slice(2);
+ try{localStorage.setItem('kilas_paud_likes_user',voterId)}catch(e){}
+}
+
 const isiEl=document.getElementById('isi');
-isiEl.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,300)+'px';});
-function setPesan(teks,error=false){const el=document.getElementById('pesan');el.textContent=teks;el.classList.toggle('error',error);}
-function escapeHtml(teks){return String(teks??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
-function escapeAttribute(teks){return escapeHtml(teks);}
-function normalisasiNama(n){return String(n||'').normalize('NFKC').trim().replace(/\s+/g,' ').toLocaleLowerCase('id-ID');}
-function ekstensi(n){const p=String(n||'').split('.');return p.length>1?p.pop().toLowerCase():'';}
-function formatTanggal(t){if(!t)return '';const d=new Date(t);return Number.isNaN(d.getTime())?'':d.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});}
-function toggleBagianPeringkat(){peringkatTerbuka=!peringkatTerbuka;const s=document.getElementById('bagianPeringkat');s.style.display=peringkatTerbuka?'block':'none';document.getElementById('panahPeringkat').textContent=peringkatTerbuka?'↑':'↓';if(peringkatTerbuka)s.scrollIntoView({behavior:'smooth',block:'start'});}
-function toggleNotifikasi(){const panel=document.getElementById('panelNotifikasi'),btn=document.getElementById('btnLonceng');const buka=!panel.classList.contains('open');panel.classList.toggle('open',buka);btn.setAttribute('aria-expanded',String(buka));if(buka)btn.classList.remove('has-notice');}
-function hapusNotifikasiLayar(){notifikasiTerbaru=[];renderNotifikasi();document.getElementById('btnLonceng').classList.remove('has-notice');}
-function tambahNotifikasi(teks){notifikasiTerbaru.unshift({teks,waktu:new Date()});notifikasiTerbaru=notifikasiTerbaru.slice(0,8);renderNotifikasi();document.getElementById('btnLonceng').classList.add('has-notice');}
-function renderNotifikasi(){const el=document.getElementById('daftarNotifikasi');if(!notifikasiTerbaru.length){el.innerHTML='<div class="small-note">Belum ada aktivitas baru sejak halaman ini dibuka.</div>';return;}el.innerHTML=notifikasiTerbaru.map(n=>'<div class="comment-item"><div>'+escapeHtml(n.teks)+'</div><div class="comment-date">'+escapeHtml(n.waktu.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}))+'</div></div>').join('');}
-function pasangRealtime(){if(!db||realtimeChannel)return;try{realtimeChannel=db.channel('kipa-aktivitas-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'posts'},payload=>{const nama=payload.new?.username||'Sebuah lembaga';tambahNotifikasi('Kabar baru dari '+nama+'.');muat();}).on('postgres_changes',{event:'INSERT',schema:'public',table:'post_comments'},()=>{tambahNotifikasi('Komentar baru pada kabar.');muat();}).on('postgres_changes',{event:'INSERT',schema:'public',table:'post_likes'},()=>{tambahNotifikasi('Ada Suka baru pada kabar.');muat();}).subscribe(status=>{if(status==='SUBSCRIBED')console.info('Realtime KIPA aktif.');});}catch(e){console.warn('Realtime notifikasi belum aktif:',e);}}
-function bersihkanPencarian(){document.getElementById('pencarian').value='';tampilkanKabar();}
-function pilihUrutan(pilihan){urutanKabar=pilihan;document.getElementById('btnTerbaru').classList.toggle('active',pilihan==='terbaru');document.getElementById('btnPopuler').classList.toggle('active',pilihan==='populer');tampilkanKabar();}
+isiEl.addEventListener('input',function(){
+ this.style.height='auto';
+ this.style.height=Math.min(this.scrollHeight,300)+'px';
+});
+
+function setPesan(teks,error=false){
+ const el=document.getElementById('pesan');
+ el.textContent=teks;
+ el.classList.toggle('error',error);
+}
+function escapeHtml(teks){
+ return String(teks??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+function escapeAttribute(teks){return escapeHtml(teks)}
+function normalisasiNama(n){
+ return String(n||'').normalize('NFKC').trim().replace(/\s+/g,' ').toLocaleLowerCase('id-ID');
+}
+function ekstensi(n){
+ const p=String(n||'').split('.');
+ return p.length>1?p.pop().toLowerCase():'';
+}
+function formatTanggal(t){
+ if(!t)return '';
+ const d=new Date(t);
+ return Number.isNaN(d.getTime())?'':d.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});
+}
+
+/* FORMULIR BAGIKAN KABAR */
+function toggleBagikanKabar(){
+ const form=document.getElementById('isiFormPosting');
+ const btn=document.getElementById('toggleFormPosting');
+ const buka=form.style.display==='none';
+ form.style.display=buka?'block':'none';
+ btn.setAttribute('aria-expanded',String(buka));
+ document.getElementById('ikonForm').textContent=buka?'−':'＋';
+ document.getElementById('labelForm').textContent=buka?'Tutup formulir ↑':'Buka formulir ↓';
+}
+
+/* PERINGKAT */
+function toggleBagianPeringkat(){
+ peringkatTerbuka=!peringkatTerbuka;
+ const s=document.getElementById('bagianPeringkat');
+ s.style.display=peringkatTerbuka?'block':'none';
+ document.getElementById('panahPeringkat').textContent=peringkatTerbuka?'↑':'↓';
+ if(peringkatTerbuka)s.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function toggleSemuaPeringkat(){
+ peringkatDiperluas=!peringkatDiperluas;
+ renderPeringkat();
+}
+
+/* NOTIFIKASI */
+function toggleNotifikasi(){
+ const panel=document.getElementById('panelNotifikasi');
+ const btn=document.getElementById('btnLonceng');
+ const buka=!panel.classList.contains('open');
+ panel.classList.toggle('open',buka);
+ btn.setAttribute('aria-expanded',String(buka));
+ if(buka)btn.classList.remove('has-notice');
+}
+function hapusNotifikasiLayar(){
+ notifikasiTerbaru=[];
+ renderNotifikasi();
+ document.getElementById('btnLonceng').classList.remove('has-notice');
+}
+function tambahNotifikasi(teks){
+ notifikasiTerbaru.unshift({teks,waktu:new Date()});
+ notifikasiTerbaru=notifikasiTerbaru.slice(0,8);
+ renderNotifikasi();
+ document.getElementById('btnLonceng').classList.add('has-notice');
+}
+function renderNotifikasi(){
+ const el=document.getElementById('daftarNotifikasi');
+ if(!notifikasiTerbaru.length){
+  el.innerHTML='<div class="small-note">Belum ada aktivitas baru sejak halaman ini dibuka.</div>';
+  return;
+ }
+ el.innerHTML=notifikasiTerbaru.map(n=>
+  '<div class="comment-item"><div>'+escapeHtml(n.teks)+'</div><div class="comment-date">'+escapeHtml(n.waktu.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}))+'</div></div>'
+ ).join('');
+}
+function pasangRealtime(){
+ if(!db||realtimeChannel)return;
+ try{
+  realtimeChannel=db.channel('kipa-aktivitas-live')
+   .on('postgres_changes',{event:'INSERT',schema:'public',table:'posts'},payload=>{
+    tambahNotifikasi('Kabar baru dari '+(payload.new?.username||'Sebuah lembaga')+'.');
+    muat();
+   })
+   .on('postgres_changes',{event:'INSERT',schema:'public',table:'post_comments'},()=>{
+    tambahNotifikasi('Komentar baru pada kabar.');
+    muat();
+   })
+   .on('postgres_changes',{event:'INSERT',schema:'public',table:'post_likes'},()=>{
+    tambahNotifikasi('Ada Suka baru pada kabar.');
+    muat();
+   })
+   .subscribe(status=>{
+    if(status==='SUBSCRIBED')console.info('Realtime KIPA aktif.');
+   });
+ }catch(e){console.warn('Realtime notifikasi belum aktif:',e)}
+}
+
+/* URUTAN KABAR */
+function pilihUrutan(pilihan){
+ urutanKabar=pilihan;
+ document.getElementById('btnTerbaru').classList.toggle('active',pilihan==='terbaru');
+ document.getElementById('btnPopuler').classList.toggle('active',pilihan==='populer');
+ tampilkanKabar();
+}
+
+/* POSTING KABAR */
 async function posting(){
- const tombol=document.getElementById('btnPosting'),nama=document.getElementById('nama').value.trim(),isi=document.getElementById('isi').value.trim(),pin=document.getElementById('pin').value.trim(),file=document.getElementById('foto').files[0];
- if(!nama||!isi){setPesan('Nama/lembaga dan isi kabar wajib diisi.',true);return;}
- if(!db){setPesan('Koneksi database belum siap. Periksa internet lalu muat ulang halaman.',true);return;}
- let fileExt='',isImage=false;
- if(file){fileExt=ekstensi(file.name);isImage=IMAGE_EXT.has(fileExt);if(!ALLOWED_EXT.has(fileExt)){setPesan('Format berkas tidak didukung. Gunakan JPG, PNG, WEBP, PDF, DOC/DOCX, XLS/XLSX, PPT/PPTX, TXT, atau CSV.',true);return;}if(file.size>MAX_FILE_SIZE){setPesan('Ukuran berkas melebihi batas 8 MB. Pilih berkas yang lebih kecil.',true);return;}if(file.size===0){setPesan('Berkas kosong. Pilih berkas lain.',true);return;}}
- tombol.disabled=true;tombol.textContent='Mengirim...';setPesan('Sedang mengirim kabar...');
+ const tombol=document.getElementById('btnPosting');
+ const nama=document.getElementById('nama').value.trim();
+ const isi=isiEl.value.trim();
+ const pin=document.getElementById('pin').value.trim();
+ const file=document.getElementById('foto').files[0];
+
+ if(!nama||!isi){
+  setPesan('Nama/lembaga dan isi kabar wajib diisi.',true);
+  return;
+ }
+ if(!pin){
+  setPesan('Buat PIN agar postingan dapat diedit atau dihapus.',true);
+  return;
+ }
+ if(!db){
+  setPesan('Koneksi database belum siap. Periksa internet lalu muat ulang halaman.',true);
+  return;
+ }
+
+ let fileExt='';
+ if(file){
+  fileExt=ekstensi(file.name);
+  if(!ALLOWED_EXT.has(fileExt)){
+   setPesan('Format berkas tidak didukung. Gunakan JPG, PNG, WEBP, PDF, DOC/DOCX, XLS/XLSX, PPT/PPTX, TXT, atau CSV.',true);
+   return;
+  }
+  if(file.size>MAX_FILE_SIZE){
+   setPesan('Ukuran berkas melebihi batas 8 MB. Pilih berkas yang lebih kecil.',true);
+   return;
+  }
+  if(file.size===0){
+   setPesan('Berkas kosong. Pilih berkas lain.',true);
+   return;
+  }
+ }
+
+ tombol.disabled=true;
+ tombol.textContent='Mengirim...';
+ setPesan('Sedang mengirim kabar...');
  let fileUrl='';
+
  try{
-   if(file){
-     const safeBase=file.name.replace(/\.[^.]+$/,'').normalize('NFKD').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,65)||'lampiran';
-     const uniqueName=Date.now()+'-'+(window.crypto&&crypto.randomUUID?crypto.randomUUID():'u'+Math.random().toString(36).slice(2))+'-'+safeBase+'.'+fileExt;
-     const upload=await db.storage.from(BUCKET).upload(uniqueName,file,{cacheControl:'3600',upsert:false,contentType:file.type||undefined});
-     if(upload.error){let msg=upload.error.message||'Kesalahan tidak diketahui';if(/mime|content.?type|not allowed|invalid key/i.test(msg))msg+=' — periksa pengaturan MIME type pada bucket Supabase.';else if(/row-level security|permission|policy/i.test(msg))msg+=' — periksa kebijakan akses (Storage policies) bucket.';setPesan('Gagal mengunggah berkas: '+msg,true);return;}
-     fileUrl=db.storage.from(BUCKET).getPublicUrl(uniqueName).data.publicUrl;
+  if(file){
+   const safeBase=file.name.replace(/\.[^.]+$/,'').normalize('NFKD').replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,65)||'lampiran';
+   const uniqueName=Date.now()+'-'+(window.crypto&&crypto.randomUUID?crypto.randomUUID():'u'+Math.random().toString(36).slice(2))+'-'+safeBase+'.'+fileExt;
+   const upload=await db.storage.from(BUCKET).upload(uniqueName,file,{
+    cacheControl:'3600',upsert:false,contentType:file.type||undefined
+   });
+   if(upload.error){
+    let msg=upload.error.message||'Kesalahan tidak diketahui';
+    if(/mime|content.?type|not allowed|invalid key/i.test(msg))msg+=' — periksa pengaturan MIME type pada bucket Supabase.';
+    else if(/row-level security|permission|policy/i.test(msg))msg+=' — periksa kebijakan akses Storage bucket.';
+    setPesan('Gagal mengunggah berkas: '+msg,true);
+    return;
    }
-   const simpan=await db.from('posts').insert([{username:nama,content:isi,image_url:fileUrl,pin:pin}]);
-   if(simpan.error){setPesan('Berkas mungkin sudah terunggah, tetapi kabar gagal disimpan: '+simpan.error.message,true);return;}
-   document.getElementById('nama').value='';isiEl.value='';isiEl.style.height='';document.getElementById('foto').value='';document.getElementById('pin').value='';
-   setPesan('✅ Kabar berhasil diposting. Poin akan dihitung pada peringkat.');await muat();
- }catch(error){setPesan('Terjadi kesalahan saat mengirim: '+(error?.message||String(error)),true);}
- finally{tombol.disabled=false;tombol.textContent='＋ POSTING KABAR';}
-}
-async function hitungTabel(tabel,postId){const r=await db.from(tabel).select('id',{count:'exact',head:true}).eq('post_id',postId);if(r.error){console.warn('Gagal menghitung '+tabel,r.error.message);return 0;}return r.count||0;}
-async function muat(){
- const daftar=document.getElementById('daftar');daftar.innerHTML='<div class="empty">Memuat kabar...</div>';
- try{
-   const hasil=await db.from('posts').select('*');
-   if(hasil.error){daftar.innerHTML='<div class="empty">Gagal memuat kabar: '+escapeHtml(hasil.error.message)+'</div>';return;}
-   const rows=hasil.data||[];
-   semuaKabar=await Promise.all(rows.map(async post=>{const [likes,comments]=await Promise.all([hitungTabel('post_likes',post.id),hitungTabel('post_comments',post.id)]);return {...post,_likeCount:likes,_commentCount:comments};}));
-   tampilkanKabar();await renderPeringkat();
- }catch(error){daftar.innerHTML='<div class="empty">Tidak dapat memuat kabar: '+escapeHtml(error?.message||String(error))+'</div>';}
-}
-function toggleSemuaPeringkat(){peringkatDiperluas=!peringkatDiperluas;renderPeringkat();}
-async function renderPeringkat(){
- const el=document.getElementById('daftarPeringkat'),tombol=document.getElementById('btnSemuaPeringkat');if(!el||!db)return;
- try{
-   const [postsRes,commentsRes,likesRes]=await Promise.all([db.from('posts').select('id,username,image_url'),db.from('post_comments').select('post_id,username'),db.from('post_likes').select('post_id,username')]);
-   if(postsRes.error)throw postsRes.error;if(commentsRes.error)throw commentsRes.error;if(likesRes.error)throw likesRes.error;
-   const skor=new Map(),label=new Map(),postById=new Map();
-   const tambah=(nama,poin)=>{const key=normalisasiNama(nama);if(!key)return;const current=skor.get(key)||0;skor.set(key,current+poin);if(!label.has(key)||String(nama).trim().length>String(label.get(key)).length)label.set(key,String(nama).trim().replace(/\s+/g,' '));};
-   for(const p of(postsRes.data||[])){const key=normalisasiNama(p.username);if(!key)continue;postById.set(String(p.id),key);tambah(p.username,p.image_url?5:3);}
-   for(const c of(commentsRes.data||[])){const key=normalisasiNama(c.username),owner=postById.get(String(c.post_id));if(key&&owner&&key!==owner)tambah(c.username,2);}
-   for(const l of(likesRes.data||[])){const key=normalisasiNama(l.username),owner=postById.get(String(l.post_id));if(key&&owner&&key!==owner)tambah(l.username,1);}
-   const daftar=[...skor.entries()].map(([key,poin])=>({key,nama:label.get(key)||key,poin})).sort((a,b)=>b.poin-a.poin||a.nama.localeCompare(b.nama,'id'));
-   if(!daftar.length){el.innerHTML='<div class="small-note">Belum ada aktivitas untuk dihitung.</div>';if(tombol)tombol.style.display='none';return;}
-   const terlihat=peringkatDiperluas?daftar:daftar.slice(0,3);
-   el.innerHTML=terlihat.map((a,i)=>'<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid #e2ebe4"><div class="avatar" style="width:30px;height:30px;border-radius:10px;font-size:12px">'+(i+1)+'</div><div style="flex:1;min-width:0;font-size:13px;font-weight:700;overflow-wrap:anywhere">'+escapeHtml(a.nama)+'</div><div style="font-size:12px;font-weight:800;color:var(--green-dark);white-space:nowrap">'+a.poin+' poin</div></div>').join('');
-   if(tombol){tombol.style.display=daftar.length>3?'inline-flex':'none';tombol.innerHTML=peringkatDiperluas?'Tutup daftar anggota ↑':'Tampilkan semua ('+daftar.length+') ↓';}
- }catch(e){el.innerHTML='<div class="small-note">Peringkat belum dapat dimuat: '+escapeHtml(e?.message||String(e))+'</div>';}
-}
-function tampilkanKabar(){
- const daftar=document.getElementById('daftar'),q=document.getElementById('pencarian').value.trim().toLocaleLowerCase('id-ID');
- let posts=semuaKabar.filter(p=>String(p.username||'').toLocaleLowerCase('id-ID').includes(q)||String(p.content||'').toLocaleLowerCase('id-ID').includes(q));
- posts.sort((a,b)=>{if(urutanKabar==='populer'){const diff=(b._likeCount+b._commentCount)-(a._likeCount+a._commentCount);if(diff)return diff;}return new Date(b.created_at||0)-new Date(a.created_at||0);});
- document.getElementById('jumlahKabar').textContent=posts.length+' kabar';
- if(!posts.length){daftar.innerHTML='<div class="empty">'+(q?'Tidak ada kabar yang cocok dengan pencarian.':'Belum ada kabar. Jadilah yang pertama berbagi!')+'</div>';return;}
- daftar.innerHTML='';
- for(const post of posts){
-   const div=document.createElement('article');div.className='post';const id=Number(post.id),nama=escapeHtml(post.username||'Lembaga PAUD'),isi=escapeHtml(post.content||''),tanggal=escapeHtml(formatTanggal(post.created_at)),inisial=escapeHtml((post.username||'P').trim().slice(0,1).toLocaleUpperCase('id-ID'));
-   let html='<div class="post-head"><div class="avatar" aria-hidden="true">'+inisial+'</div><div class="post-person"><div class="nama">'+nama+'</div><div class="tanggal">'+tanggal+'</div></div><div class="menu-wrap"><button type="button" class="menu-button" aria-label="Menu postingan" onclick="toggleMenu('+id+')">⋮</button><div id="menu-'+id+'" class="menu-panel" style="display:none"><button type="button" onclick="editPost('+id+')">✏️ Edit postingan</button><button type="button" class="hapus" onclick="hapusPost('+id+')">🗑️ Hapus postingan</button></div></div></div><div class="kabar">'+isi+'</div>';
-   if(post.image_url){const ext=ekstensi(String(post.image_url).split('?')[0]);if(IMAGE_EXT.has(ext)||/\.(jpe?g|png|webp)(\?|$)/i.test(post.image_url)){html+='<img class="post-image" src="'+escapeAttribute(post.image_url)+'" alt="Foto kegiatan PAUD" loading="lazy">';}else{const fileName=decodeURIComponent(String(post.image_url).split('/').pop().split('?')[0]||'Lampiran');html+='<div class="post-file"><span aria-hidden="true">📎</span><div style="min-width:0"><a href="'+escapeAttribute(post.image_url)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(fileName)+'</a><div class="small-note">Buka atau unduh dokumen lampiran</div></div></div>';}}
-   html+='<div class="post-actions"><button type="button" onclick="beriSuka('+id+')">♡ Suka <span id="jumlah-suka-'+id+'">'+post._likeCount+'</span></button><button type="button" onclick="toggleKomentar('+id+')">💬 Komentar <span id="jumlah-komentar-'+id+'">'+post._commentCount+'</span></button></div><div class="comment-area" id="komentar-area-'+id+'"><div id="komentar-list-'+id+'" class="small-note">Buka komentar untuk memuat diskusi.</div><div class="comment-form"><div><label for="komentar-nama-'+id+'">Nama</label><input id="komentar-nama-'+id+'" maxlength="100" placeholder="Nama Anda"></div><div><label for="komentar-isi-'+id+'">Komentar</label><input id="komentar-isi-'+id+'" maxlength="2000" placeholder="Tulis komentar..."></div><button type="button" onclick="kirimKomentar('+id+')">Kirim</button></div><div id="komentar-pesan-'+id+'" class="small-note" role="status"></div></div>';
-   div.innerHTML=html;daftar.appendChild(div);
+   fileUrl=db.storage.from(BUCKET).getPublicUrl(uniqueName).data.publicUrl;
+  }
+
+  const simpan=await db.from('posts').insert([{
+   username:nama,content:isi,image_url:fileUrl,pin:pin
+  }]);
+
+  if(simpan.error){
+   setPesan('Berkas mungkin sudah terunggah, tetapi kabar gagal disimpan: '+simpan.error.message,true);
+   return;
+  }
+
+  document.getElementById('nama').value='';
+  isiEl.value='';
+  isiEl.style.height='';
+  document.getElementById('foto').value='';
+  document.getElementById('pin').value='';
+  setPesan('✅ Kabar berhasil diposting. Poin akan dihitung pada peringkat.');
+  await muat();
+ }catch(error){
+  setPesan('Terjadi kesalahan saat mengirim: '+(error?.message||String(error)),true);
+ }finally{
+  tombol.disabled=false;
+  tombol.textContent='＋ POSTING KABAR';
  }
 }
-async function beriSuka(postId){
- if(!db){alert('Koneksi database belum siap.');return;}
- const post=semuaKabar.find(x=>Number(x.id)===Number(postId));if(!post){alert('Postingan tidak ditemukan. Muat ulang halaman.');return;}
- const keyName='kilas_paud_likes_username';
- let username='';try{username=(localStorage.getItem(keyName)||'').trim();}catch(e){}
- if(!username){username=prompt('Nama atau nama lembaga Anda untuk pencatatan poin Suka:');if(username===null)return;username=username.trim().replace(/\s+/g,' ');if(!username){alert('Nama diperlukan agar poin Suka dapat dihitung.');return;}try{localStorage.setItem(keyName,username);}catch(e){}}
- if(normalisasiNama(username)===normalisasiNama(post.username)){alert('Suka pada postingan sendiri tidak menambah poin.');}
- try{
-   const hasil=await db.from('post_likes').insert({post_id:postId,voter_id:voterId,username:username});
-   if(hasil.error){alert(hasil.error.code==='23505'?'Anda sudah menyukai kabar ini dari perangkat/browser ini.':'Gagal memberi Suka: '+hasil.error.message);return;}
-   const jumlah=await hitungTabel('post_likes',postId),angka=document.getElementById('jumlah-suka-'+postId);if(angka)angka.textContent=jumlah;
-   post._likeCount=jumlah;await renderPeringkat();if(urutanKabar==='populer')tampilkanKabar();
- }catch(e){alert('Gagal memberi Suka: '+(e?.message||String(e)));}
+
+/* MEMUAT DATA */
+async function hitungTabel(tabel,postId){
+ const r=await db.from(tabel).select('id',{count:'exact',head:true}).eq('post_id',postId);
+ if(r.error){
+  console.warn('Gagal menghitung '+tabel,r.error.message);
+  return 0;
+ }
+ return r.count||0;
 }
-async function toggleKomentar(postId){const area=document.getElementById('komentar-area-'+postId);if(!area)return;const buka=!area.classList.contains('open');area.classList.toggle('open',buka);if(buka)await muatKomentar(postId);}
-async function muatKomentar(postId){const list=document.getElementById('komentar-list-'+postId);if(!list)return;list.textContent='Memuat komentar...';try{const r=await db.from('post_comments').select('id,post_id,username,content,created_at').eq('post_id',postId).order('created_at',{ascending:true});if(r.error){list.textContent='Gagal memuat komentar: '+r.error.message;return;}if(!r.data?.length){list.innerHTML='<div class="small-note">Belum ada komentar.</div>';return;}list.innerHTML=r.data.map(k=>'<div class="comment-item"><div class="comment-name">'+escapeHtml(k.username||'Pengunjung')+'</div><div class="comment-date">'+escapeHtml(formatTanggal(k.created_at))+'</div><div class="comment-text">'+escapeHtml(k.content||'')+'</div></div>').join('');}catch(e){list.textContent='Gagal memuat komentar: '+(e?.message||String(e));}}
-async function kirimKomentar(postId){const namaEl=document.getElementById('komentar-nama-'+postId),isiEl=document.getElementById('komentar-isi-'+postId),pesan=document.getElementById('komentar-pesan-'+postId),username=namaEl.value.trim().replace(/\s+/g,' '),content=isiEl.value.trim();if(!username||!content){pesan.textContent='Nama dan komentar harus diisi.';return;}pesan.textContent='Mengirim komentar...';try{const hasil=await db.from('post_comments').insert({post_id:postId,username,content});if(hasil.error){pesan.textContent='Gagal mengirim komentar: '+hasil.error.message;return;}isiEl.value='';pesan.textContent='Komentar berhasil dikirim.';try{localStorage.setItem('kilas_paud_likes_username',username);}catch(e){}await muatKomentar(postId);const jumlah=await hitungTabel('post_comments',postId),angka=document.getElementById('jumlah-komentar-'+postId);if(angka)angka.textContent=jumlah;const p=semuaKabar.find(x=>Number(x.id)===postId);if(p)p._commentCount=jumlah;if(urutanKabar==='populer')tampilkanKabar();await renderPeringkat();}catch(e){pesan.textContent='Gagal mengirim komentar: '+(e?.message||String(e));}}
-function toggleMenu(postId){const menu=document.getElementById('menu-'+postId);if(!menu)return;const akanBuka=menu.style.display==='none';document.querySelectorAll('.menu-panel').forEach(m=>m.style.display='none');menu.style.display=akanBuka?'block':'none';}
-async function editPost(postId){const menu=document.getElementById('menu-'+postId);if(menu)menu.style.display='none';const pin=prompt('Masukkan PIN yang dibuat saat memposting kabar ini:');if(pin===null)return;if(!pin.trim()){alert('PIN tidak boleh kosong.');return;}const namaBaru=prompt('Nama / lembaga baru:');if(namaBaru===null)return;if(!namaBaru.trim()){alert('Nama tidak boleh kosong.');return;}const isiBaru=prompt('Isi kabar baru:');if(isiBaru===null)return;if(!isiBaru.trim()){alert('Isi kabar tidak boleh kosong.');return;}try{const hasil=await db.rpc('edit_post_with_pin',{p_post_id:postId,p_pin:pin.trim(),p_username:namaBaru.trim(),p_content:isiBaru.trim()});if(hasil.error){alert('Gagal mengedit. Detail: '+hasil.error.message);return;}if(hasil.data!==true){alert('PIN tidak cocok atau postingan tidak ditemukan.');return;}alert('Postingan berhasil diperbarui.');await muat();}catch(e){alert('Gagal mengedit: '+(e?.message||String(e)));}}
-async function hapusPost(postId){const menu=document.getElementById('menu-'+postId);if(menu)menu.style.display='none';if(!confirm('Yakin ingin menghapus postingan ini? Like dan komentar terkait juga akan ikut terhapus.'))return;const pin=prompt('Masukkan PIN yang dibuat saat memposting kabar ini:');if(pin===null)return;if(!pin.trim()){alert('PIN tidak boleh kosong.');return;}try{const hasil=await db.rpc('delete_post_with_pin',{p_post_id:postId,p_pin:pin.trim()});if(hasil.error){alert('Gagal menghapus. Detail: '+hasil.error.message);return;}if(hasil.data!==true){alert('PIN tidak cocok atau postingan tidak ditemukan.');return;}alert('Postingan berhasil dihapus.');await muat();}catch(e){alert('Gagal menghapus: '+(e?.message||String(e)));}}
-async function mulai(){const daftar=document.getElementById('daftar');try{if(!window.supabase)throw new Error('Pustaka Supabase tidak berhasil dimuat. Periksa internet lalu muat ulang.');db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const cek=await db.from('posts').select('id',{head:true,count:'exact'});if(cek.error){daftar.innerHTML='<div class="empty">Koneksi Supabase bermasalah: '+escapeHtml(cek.error.message)+'</div>';return;}await muat();pasangRealtime();renderNotifikasi();}catch(e){daftar.innerHTML='<div class="empty">KIPA Leles belum dapat terhubung: '+escapeHtml(e?.message||String(e))+'</div>';}}
-document.addEventListener('click',function(e){if(!e.target.closest('.menu-wrap'))document.querySelectorAll('.menu-panel').forEach(m=>m.style.display='none');if(!e.target.closest('.bell-wrap')){const p=document.getElementById('panelNotifikasi');p.classList.remove('open');document.getElementById('btnLonceng').setAttribute('aria-expanded','false');}});
-document.getElementById('bagianPeringkat').style.display='none';peringkatTerbuka=false;
+async function muat(){
+ const daftar=document.getElementById('daftar');
+ daftar.innerHTML='<div class="empty">Memuat kabar...</div>';
+ try{
+  const hasil=await db.from('posts').select('*');
+  if(hasil.error){
+   daftar.innerHTML='<div class="empty">Gagal memuat kabar: '+escapeHtml(hasil.error.message)+'</div>';
+   return;
+  }
+  const rows=hasil.data||[];
+  semuaKabar=await Promise.all(rows.map(async post=>{
+   const [likes,comments]=await Promise.all([
+    hitungTabel('post_likes',post.id),
+    hitungTabel('post_comments',post.id)
+   ]);
+   return {...post,_likeCount:likes,_commentCount:comments};
+  }));
+  tampilkanKabar();
+  await renderPeringkat();
+ }catch(error){
+  daftar.innerHTML='<div class="empty">Tidak dapat memuat kabar: '+escapeHtml(error?.message||String(error))+'</div>';
+ }
+}
+
+/* PERHITUNGAN POIN */
+async function renderPeringkat(){
+ const el=document.getElementById('daftarPeringkat');
+ const tombol=document.getElementById('btnSemuaPeringkat');
+ if(!el||!db)return;
+
+ try{
+  const [postsRes,commentsRes,likesRes]=await Promise.all([
+   db.from('posts').select('id,username,image_url'),
+   db.from('post_comments').select('post_id,username'),
+   db.from('post_likes').select('post_id,username')
+  ]);
+
+  if(postsRes.error)throw postsRes.error;
+  if(commentsRes.error)throw commentsRes.error;
+  if(likesRes.error)throw likesRes.error;
+
+  const skor=new Map(),label=new Map(),postById=new Map();
+  const tambah=(nama,poin)=>{
+   const key=normalisasiNama(nama);
+   if(!key)return;
+   skor.set(key,(skor.get(key)||0)+poin);
+   if(!label.has(key)||String(nama).trim().length>String(label.get(key)).length){
+    label.set(key,String(nama).trim().replace(/\s+/g,' '));
+   }
+  };
+
+  for(const p of(postsRes.data||[])){
+   const key=normalisasiNama(p.username);
+   if(!key)continue;
+   postById.set(String(p.id),key);
+   tambah(p.username,p.image_url?5:3);
+  }
+  for(const c of(commentsRes.data||[])){
+   const key=normalisasiNama(c.username);
+   const owner=postById.get(String(c.post_id));
+   if(key&&owner&&key!==owner)tambah(c.username,2);
+  }
+  for(const l of(likesRes.data||[])){
+   const key=normalisasiNama(l.username);
+   const owner=postById.get(String(l.post_id));
+   if(key&&owner&&key!==owner)tambah(l.username,1);
+  }
+
+  const daftar=[...skor.entries()].map(([key,poin])=>({
+   key,nama:label.get(key)||key,poin
+  })).sort((a,b)=>b.poin-a.poin||a.nama.localeCompare(b.nama,'id'));
+
+  if(!daftar.length){
+   el.innerHTML='<div class="small-note">Belum ada aktivitas untuk dihitung.</div>';
+   if(tombol)tombol.style.display='none';
+   return;
+  }
+
+  const terlihat=peringkatDiperluas?daftar:daftar.slice(0,3);
+  el.innerHTML=terlihat.map((a,i)=>
+   '<div style="display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid #e2ebe4">'+
+   '<div class="avatar" style="width:29px;height:29px;border-radius:9px;font-size:12px">'+(i+1)+'</div>'+
+   '<div style="flex:1;min-width:0;font-size:12px;font-weight:700;overflow-wrap:anywhere">'+escapeHtml(a.nama)+'</div>'+
+   '<div style="font-size:11px;font-weight:800;color:var(--gd);white-space:nowrap">'+a.poin+' poin</div></div>'
+  ).join('');
+
+  if(tombol){
+   tombol.style.display=daftar.length>3?'inline-flex':'none';
+   tombol.textContent=peringkatDiperluas?'Tutup daftar anggota ↑':'Tampilkan semua ('+daftar.length+') ↓';
+  }
+ }catch(e){
+  el.innerHTML='<div class="small-note">Peringkat belum dapat dimuat: '+escapeHtml(e?.message||String(e))+'</div>';
+ }
+}
+
+/* MENAMPILKAN KABAR */
+function tampilkanKabar(){
+ const daftar=document.getElementById('daftar');
+ const q=document.getElementById('pencarian').value.trim().toLocaleLowerCase('id-ID');
+
+ let posts=semuaKabar.filter(p=>
+  String(p.username||'').toLocaleLowerCase('id-ID').includes(q)||
+  String(p.content||'').toLocaleLowerCase('id-ID').includes(q)
+ );
+
+ posts.sort((a,b)=>{
+  if(urutanKabar==='populer'){
+   const diff=(b._likeCount+b._commentCount)-(a._likeCount+a._commentCount);
+   if(diff)return diff;
+  }
+  return new Date(b.created_at||0)-new Date(a.created_at||0);
+ });
+
+ document.getElementById('jumlahKabar').textContent=posts.length+' kabar';
+
+ if(!posts.length){
+  daftar.innerHTML='<div class="empty">'+(q?'Tidak ada kabar yang cocok dengan pencarian.':'Belum ada kabar. Jadilah yang pertama berbagi!')+'</div>';
+  return;
+ }
+
+ daftar.innerHTML='';
+
+ for(const post of posts){
+  const div=document.createElement('article');
+  div.className='post';
+
+  const id=Number(post.id);
+  const nama=escapeHtml(post.username||'Lembaga PAUD');
+  const isi=escapeHtml(post.content||'');
+  const tanggal=escapeHtml(formatTanggal(post.created_at));
+  const inisial=escapeHtml((post.username||'P').trim().slice(0,1).toLocaleUpperCase('id-ID'));
+
+  let html='<div class="post-head">'+
+   '<div class="avatar" aria-hidden="true">'+inisial+'</div>'+
+   '<div class="post-person"><div class="nama">'+nama+'</div><div class="tanggal">'+tanggal+'</div></div>'+
+   '<div class="menu-wrap">'+
+   '<button type="button" class="menu-button" aria-label="Menu postingan" onclick="toggleMenu('+id+')">⋮</button>'+
+   '<div id="menu-'+id+'" class="menu-panel" style="display:none">'+
+   '<button type="button" onclick="editPost('+id+')">✏️ Edit postingan</button>'+
+   '<button type="button" class="hapus" onclick="hapusPost('+id+')">🗑️ Hapus postingan</button>'+
+   '</div></div></div><div class="kabar">'+isi+'</div>';
+
+  if(post.image_url){
+   const url=String(post.image_url);
+   const ext=ekstensi(url.split('?')[0]);
+
+   if(IMAGE_EXT.has(ext)||/\.(jpe?g|png|webp)(\?|$)/i.test(url)){
+    html+='<img class="post-image" src="'+escapeAttribute(url)+'" alt="Foto kegiatan PAUD" loading="lazy">';
+   }else{
+    let fileName='Lampiran';
+    try{fileName=decodeURIComponent(url.split('/').pop().split('?')[0]||'Lampiran')}catch(e){}
+    html+='<div class="post-file"><span aria-hidden="true">📎</span><div style="min-width:0"><a href="'+escapeAttribute(url)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(fileName)+'</a><div class="small-note">Buka atau unduh dokumen lampiran</div></div></div>';
+   }
+  }
+
+  html+='<div class="post-actions">'+
+   '<button type="button" onclick="beriSuka('+id+')">♡ Suka <span id="jumlah-suka-'+id+'">'+post._likeCount+'</span></button>'+
+   '<button type="button" onclick="toggleKomentar('+id+')">💬 Komentar <span id="jumlah-komentar-'+id+'">'+post._commentCount+'</span></button>'+
+   '</div>'+
+   '<div class="comment-area" id="komentar-area-'+id+'">'+
+   '<div id="komentar-list-'+id+'" class="small-note">Buka komentar untuk memuat diskusi.</div>'+
+   '<div class="comment-form">'+
+   '<div><label for="komentar-nama-'+id+'">Nama</label><input id="komentar-nama-'+id+'" maxlength="100" placeholder="Nama Anda"></div>'+
+   '<div><label for="komentar-isi-'+id+'">Komentar</label><input id="komentar-isi-'+id+'" maxlength="2000" placeholder="Tulis komentar..."></div>'+
+   '<button type="button" onclick="kirimKomentar('+id+')">Kirim</button>'+
+   '</div><div id="komentar-pesan-'+id+'" class="small-note" role="status"></div></div>';
+
+  div.innerHTML=html;
+  daftar.appendChild(div);
+ }
+}
+
+/* SUKA */
+async function beriSuka(postId){
+ if(!db){alert('Koneksi database belum siap.');return}
+ const post=semuaKabar.find(x=>Number(x.id)===Number(postId));
+ if(!post){alert('Postingan tidak ditemukan. Muat ulang halaman.');return}
+
+ const keyName='kilas_paud_likes_username';
+ let username='';
+ try{username=(localStorage.getItem(keyName)||'').trim()}catch(e){}
+
+ if(!username){
+  username=prompt('Nama atau nama lembaga Anda untuk pencatatan poin Suka:');
+  if(username===null)return;
+  username=username.trim().replace(/\s+/g,' ');
+  if(!username){alert('Nama diperlukan agar poin Suka dapat dihitung.');return}
+  try{localStorage.setItem(keyName,username)}catch(e){}
+ }
+
+ if(normalisasiNama(username)===normalisasiNama(post.username)){
+  alert('Suka pada postingan sendiri tidak menambah poin.');
+  return;
+ }
+
+ try{
+  const hasil=await db.from('post_likes').insert({
+   post_id:postId,voter_id:voterId,username:username
+  });
+  if(hasil.error){
+   alert(hasil.error.code==='23505'?'Anda sudah menyukai kabar ini dari perangkat/browser ini.':'Gagal memberi Suka: '+hasil.error.message);
+   return;
+  }
+
+  const jumlah=await hitungTabel('post_likes',postId);
+  const angka=document.getElementById('jumlah-suka-'+postId);
+  if(angka)angka.textContent=jumlah;
+  post._likeCount=jumlah;
+  await renderPeringkat();
+  if(urutanKabar==='populer')tampilkanKabar();
+ }catch(e){
+  alert('Gagal memberi Suka: '+(e?.message||String(e)));
+ }
+}
+
+/* KOMENTAR */
+async function toggleKomentar(postId){
+ const area=document.getElementById('komentar-area-'+postId);
+ if(!area)return;
+ const buka=!area.classList.contains('open');
+ area.classList.toggle('open',buka);
+ if(buka)await muatKomentar(postId);
+}
+async function muatKomentar(postId){
+ const list=document.getElementById('komentar-list-'+postId);
+ if(!list)return;
+ list.textContent='Memuat komentar...';
+
+ try{
+  const r=await db.from('post_comments')
+   .select('id,post_id,username,content,created_at')
+   .eq('post_id',postId).order('created_at',{ascending:true});
+
+  if(r.error){list.textContent='Gagal memuat komentar: '+r.error.message;return}
+  if(!r.data?.length){
+   list.innerHTML='<div class="small-note">Belum ada komentar.</div>';
+   return;
+  }
+
+  list.innerHTML=r.data.map(k=>
+   '<div class="comment-item"><div class="comment-name">'+escapeHtml(k.username||'Pengunjung')+'</div>'+
+   '<div class="comment-date">'+escapeHtml(formatTanggal(k.created_at))+'</div>'+
+   '<div class="comment-text">'+escapeHtml(k.content||'')+'</div></div>'
+  ).join('');
+ }catch(e){
+  list.textContent='Gagal memuat komentar: '+(e?.message||String(e));
+ }
+}
+async function kirimKomentar(postId){
+ const namaEl=document.getElementById('komentar-nama-'+postId);
+ const isiKomentarEl=document.getElementById('komentar-isi-'+postId);
+ const pesan=document.getElementById('komentar-pesan-'+postId);
+ const username=namaEl.value.trim().replace(/\s+/g,' ');
+ const content=isiKomentarEl.value.trim();
+
+ if(!username||!content){pesan.textContent='Nama dan komentar harus diisi.';return}
+ pesan.textContent='Mengirim komentar...';
+
+ try{
+  const hasil=await db.from('post_comments').insert({post_id:postId,username,content});
+  if(hasil.error){pesan.textContent='Gagal mengirim komentar: '+hasil.error.message;return}
+
+  isiKomentarEl.value='';
+  pesan.textContent='Komentar berhasil dikirim.';
+  try{localStorage.setItem('kilas_paud_likes_username',username)}catch(e){}
+  await muatKomentar(postId);
+
+  const jumlah=await hitungTabel('post_comments',postId);
+  const angka=document.getElementById('jumlah-komentar-'+postId);
+  if(angka)angka.textContent=jumlah;
+
+  const p=semuaKabar.find(x=>Number(x.id)===Number(postId));
+  if(p)p._commentCount=jumlah;
+
+  if(urutanKabar==='populer')tampilkanKabar();
+  await renderPeringkat();
+ }catch(e){
+  pesan.textContent='Gagal mengirim komentar: '+(e?.message||String(e));
+ }
+}
+
+/* EDIT DAN HAPUS PER POSTINGAN: TETAP MEMAKAI RPC + PIN */
+function toggleMenu(postId){
+ const menu=document.getElementById('menu-'+postId);
+ if(!menu)return;
+ const akanBuka=menu.style.display==='none';
+ document.querySelectorAll('.menu-panel').forEach(m=>m.style.display='none');
+ menu.style.display=akanBuka?'block':'none';
+}
+async function editPost(postId){
+ const menu=document.getElementById('menu-'+postId);
+ if(menu)menu.style.display='none';
+
+ const pin=prompt('Masukkan PIN yang dibuat saat memposting kabar ini:');
+ if(pin===null)return;
+ if(!pin.trim()){alert('PIN tidak boleh kosong.');return}
+
+ const namaBaru=prompt('Nama / lembaga baru:');
+ if(namaBaru===null)return;
+ if(!namaBaru.trim()){alert('Nama tidak boleh kosong.');return}
+
+ const isiBaru=prompt('Isi kabar baru:');
+ if(isiBaru===null)return;
+ if(!isiBaru.trim()){alert('Isi kabar tidak boleh kosong.');return}
+
+ try{
+  const hasil=await db.rpc('edit_post_with_pin',{
+   p_post_id:postId,p_pin:pin.trim(),
+   p_username:namaBaru.trim(),p_content:isiBaru.trim()
+  });
+  if(hasil.error){alert('Gagal mengedit. Detail: '+hasil.error.message);return}
+  if(hasil.data!==true){alert('PIN tidak cocok atau postingan tidak ditemukan.');return}
+  alert('Postingan berhasil diperbarui.');
+  await muat();
+ }catch(e){
+  alert('Gagal mengedit: '+(e?.message||String(e)));
+ }
+}
+async function hapusPost(postId){
+ const menu=document.getElementById('menu-'+postId);
+ if(menu)menu.style.display='none';
+
+ if(!confirm('Yakin ingin menghapus postingan ini? Like dan komentar terkait juga akan ikut terhapus.'))return;
+
+ const pin=prompt('Masukkan PIN yang dibuat saat memposting kabar ini:');
+ if(pin===null)return;
+ if(!pin.trim()){alert('PIN tidak boleh kosong.');return}
+
+ try{
+  const hasil=await db.rpc('delete_post_with_pin',{
+   p_post_id:postId,p_pin:pin.trim()
+  });
+  if(hasil.error){alert('Gagal menghapus. Detail: '+hasil.error.message);return}
+  if(hasil.data!==true){alert('PIN tidak cocok atau postingan tidak ditemukan.');return}
+  alert('Postingan berhasil dihapus.');
+  await muat();
+ }catch(e){
+  alert('Gagal menghapus: '+(e?.message||String(e)));
+ }
+}
+
+/* INISIALISASI SUPABASE */
+async function mulai(){
+ const daftar=document.getElementById('daftar');
+
+ try{
+  if(!window.supabase)throw new Error('Pustaka Supabase tidak berhasil dimuat. Periksa internet lalu muat ulang.');
+
+  db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+  const cek=await db.from('posts').select('id',{head:true,count:'exact'});
+  if(cek.error){
+   daftar.innerHTML='<div class="empty">Koneksi Supabase bermasalah: '+escapeHtml(cek.error.message)+'</div>';
+   return;
+  }
+
+  await muat();
+  pasangRealtime();
+  renderNotifikasi();
+ }catch(e){
+  daftar.innerHTML='<div class="empty">KIPA Leles belum dapat terhubung: '+escapeHtml(e?.message||String(e))+'</div>';
+ }
+}
+
+document.addEventListener('click',function(e){
+ if(!e.target.closest('.menu-wrap')){
+  document.querySelectorAll('.menu-panel').forEach(m=>m.style.display='none');
+ }
+ if(!e.target.closest('.bell-wrap')){
+  const p=document.getElementById('panelNotifikasi');
+  p.classList.remove('open');
+  document.getElementById('btnLonceng').setAttribute('aria-expanded','false');
+ }
+});
+
 mulai();
 </script>
 </body>
-  </html>
+</html>
