@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="description" content="KIPA Leles — Kilas Informasi PAUD Kecamatan Leles. Menebar Kabar, Berbagi Inspirasi.">
+  <title>KIPA Leles — Menebar Kabar, Berbagi Inspirasi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F8FAFC; }
+  </style>
+</head>
+<body class="text-slate-800 pb-20">
+<header class="bg-emerald-700 border-b-2 border-emerald-800 sticky top-0 z-50 shadow-sm">
+  <div class="max-w-5xl mx-auto px-3 py-2.5 flex items-center justify-between gap-2">
+    <div class="flex items-center space-x-2 min-w-0">
+      <div class="bg-white text-amber-600 p-2 rounded-xl shadow-sm text-base font-bold shrink-0"><i class="fa-solid fa-camera-retro"></i></div>
+      <div class="min-w-0">
+        <h1 class="text-base md:text-lg font-black text-amber-950 tracking-tight leading-none truncate">KIPA Leles</h1>
+        <p class="text-[10px] text-amber-900 font-semibold mt-0.5 truncate">Kilas Informasi PAUD</p>
+      </div>
+    </div>
+    <div class="text-right text-[10px] md:text-xs font-bold text-amber-950 bg-amber-300 px-2.5 py-1 rounded-full border border-amber-400 shrink-0">Penilik: Yayan Hadiyanto, S.Pd.-M.T.</div>
+  </div>
+</header>
+
+<main class="max-w-5xl mx-auto px-3 mt-3 space-y-4">
+<section class="bg-gradient-to-br from-emerald-700 via-emerald-600 to-lime-600 text-white rounded-2xl p-3.5 shadow-md space-y-2.5">
+  <div class="flex items-center justify-between border-b border-amber-400/50 pb-2">
+    <div class="flex items-center gap-1.5"><i class="fa-solid fa-trophy text-amber-200 text-sm"></i><h2 class="text-xs font-extrabold uppercase tracking-wider">Peringkat Keaktifan Anggota</h2></div>
+    <span class="text-[9px] bg-white/20 backdrop-blur px-2 py-0.5 rounded-full font-bold text-amber-100">Live Database</span>
+  </div>
+  <p class="text-[9.5px] text-amber-100 italic">Poin: posting tanpa foto +3 • dengan foto +5 • komentar +2 • suka +1. Interaksi pada postingan sendiri tidak dihitung.</p>
+  <div id="rekapContainer" class="space-y-1.5"><p class="text-[11px] text-amber-100 italic">Memuat data keaktifan...</p></div>
+  <button onclick="toggleRekapLengkap()" id="btnRekapLengkap" class="w-full bg-black/20 hover:bg-black/30 text-amber-100 text-[10.5px] font-bold py-1.5 rounded-xl transition flex items-center justify-center gap-1.5">
+    <span>Lihat Keseluruhan PAUD</span><i class="fa-solid fa-chevron-down text-[9px]" id="iconChevron"></i>
+  </button>
+</section>
+
+<section class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+  <div class="flex items-center space-x-2.5 mb-3">
+    <div class="w-9 h-9 rounded-full bg-rose-500 text-white font-bold flex items-center justify-center text-xs shadow shrink-0">PAUD</div>
+    <div><p class="text-xs font-bold text-slate-800">Bagikan Laporan Pembelajaran</p><p class="text-[10px] text-slate-500">Layanan Penilik PAUD/Dikmas Kec. Leles</p></div>
+  </div>
+  <form id="postForm" onsubmit="event.preventDefault(); addPost();" class="space-y-3">
+    <div><label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Nama Lembaga PAUD <span class="text-rose-500">*</span></label>
+      <input type="text" id="namaLembaga" required placeholder="Contoh: PAUD Melati Indah Leles" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+    </div>
+    <div><label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Deskripsi Kegiatan <span class="text-rose-500">*</span></label>
+      <textarea id="deskripsi" rows="2" required placeholder="Tuliskan topik pembelajaran, tujuan, atau kegembiraan anak hari ini..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none"></textarea>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+      <div><label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Foto Kegiatan <span class="text-slate-400">(opsional)</span></label>
+        <input type="file" id="fotoInput" accept="image/*" class="hidden" onchange="updateFileName(this)">
+        <label for="fotoInput" class="w-full bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 border-dashed rounded-xl px-3 py-2 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition">
+          <i class="fa-solid fa-image text-amber-600"></i><span id="fileNameLabel" class="truncate max-w-[180px]">Pilih Foto (opsional)</span>
+        </label>
+      </div>
+      <div><label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">PIN Hapus (4 Angka) <span class="text-rose-500">*</span></label>
+        <input type="password" id="pinInput" maxlength="4" required placeholder="Contoh: 1234" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+      </div>
+    </div>
+    <button type="submit" id="btnSubmitPost" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs py-2.5 rounded-xl shadow transition flex items-center justify-center gap-2">
+      <i class="fa-solid fa-paper-plane"></i><span>BAGIKAN KABAR</span>
+    </button>
+  </form>
+</section>
+
+<div id="feedContainer" class="space-y-4"><div class="text-center py-8 text-xs text-slate-400">Memuat laporan kegiatan dari Supabase...</div></div>
+</main>
+
+<script>
+const SUPABASE_URL = "https://hyiwkftkwacbiowooulp.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5aXdrZnRrd2FjYmlvd29vdWxwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0MDM4NzMsImV4cCI6MjEwNjk3OTg3M30.7dw1rTFbBiNpsK5dGqFBPR8jLwVebI42pVaNrQou3-8";
+let supabase = null;
+const PIN_MASTER_PENILIK = "9999";
+let showAllRekap = false, cachedPosts = [];
+
+function updateFileName(input) {
+  document.getElementById('fileNameLabel').innerText = input.files && input.files[0] ? input.files[0].name : "Pilih Foto (opsional)";
+}
+function normName(value) { return String(value || "").trim().replace(/\\s+/g, " ").toLocaleLowerCase("id-ID"); }
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+async function fetchPosts() {
+  try {
+    const { data: postsData, error: postsError } = await supabase.from('Posts').select('*').order('created_at', { ascending: false });
+    if (postsError) throw postsError;
+    if (!postsData || postsData.length === 0) { cachedPosts=[]; renderFeed(); return; }
+    const postIds = postsData.map(p=>p.id);
+    const { data: likesData, error: likesError } = await supabase.from('post_likes').select('*').in('post_id',postIds);
+    if (likesError) console.error("Error fetching likes:",likesError);
+    const { data: commentsData, error: commentsError } = await supabase.from('post_comments').select('*').in('post_id',postIds).order('created_at',{ascending:true});
+    if (commentsError) console.error("Error fetching comments:",commentsError);
+    cachedPosts=postsData.map(post=>({
+      id:post.id, lembaga:post.user||"PAUD Leles", deskripsi:post.content||"", foto:post.image_url||"", dokumen:post.document_url||"", dokumenNama:post.document_name||"",
+      pin:post.pin||"1234", created_at:post.created_at,
+      likedBy:(likesData||[]).filter(l=>l.post_id===post.id).map(l=>l.lembaga),
+      comments:(commentsData||[]).filter(c=>c.post_id===post.id).map(c=>({nama:c.pengirim,teks:c.teks}))
+    }));
+    renderFeed();
+  } catch(err) {
+    console.error(err);
+    document.getElementById('feedContainer').innerHTML=`<div class="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-2xl text-xs text-center">Gagal terhubung ke Supabase.<br><span class="text-[10px] opacity-75">${err.message||err}</span></div>`;
+  }
+}
+
+function formatWaktu(dateString) {
+  if(!dateString) return "Baru saja";
+  const date=new Date(dateString), now=new Date(), diffSeconds=Math.floor((now-date)/1000);
+  if(diffSeconds<60)return"Baru saja";
+  if(diffSeconds<3600)return`${Math.floor(diffSeconds/60)} menit yang lalu`;
+  if(diffSeconds<86400)return`${Math.floor(diffSeconds/3600)} jam yang lalu`;
+  return`${Math.floor(diffSeconds/86400)} hari yang lalu`;
+}
+
+async function addPost() {
+  const btn=document.getElementById('btnSubmitPost'), lembaga=document.getElementById('namaLembaga').value.trim(),
+        deskripsi=document.getElementById('deskripsi').value.trim(), pin=document.getElementById('pinInput').value.trim(),
+        fotoInput=document.getElementById('fotoInput'), foto=fotoInput.files && fotoInput.files[0];
+  if(!lembaga || !deskripsi || !/^\d{4}$/.test(pin)){alert("Lengkapi nama lembaga, deskripsi, dan PIN 4 angka.");return;}
+  if(foto && foto.size>8*1024*1024){alert("Ukuran foto maksimal 8 MB.");return;}
+  try {
+    btn.disabled=true; btn.innerHTML=`<i class="fa-solid fa-spinner fa-spin"></i><span>Menyimpan kabar...</span>`;
+    let imageUrl=null;
+    if(foto){
+      const ext=(foto.name.split('.').pop()||'jpg').toLowerCase(), path=`leles/${Date.now()}_${Math.random().toString(36).slice(2,9)}.${ext}`;
+      const {error}=await supabase.storage.from('post-images').upload(path,foto,{cacheControl:'3600',upsert:false});
+      if(error)throw new Error(`Gagal mengunggah foto: ${error.message}`);
+      imageUrl=supabase.storage.from('post-images').getPublicUrl(path).data.publicUrl;
+    }
+    const {error:insertError}=await supabase.from('Posts').insert([{user:lembaga,content:deskripsi,image_url:imageUrl,pin:pin}]);
+    if(insertError)throw insertError;
+    document.getElementById('postForm').reset();
+    document.getElementById('fileNameLabel').innerText="Pilih Foto (opsional)";
+    alert("Kabar berhasil dibagikan!");
+    await fetchPosts();
+  } catch(err){alert(err.message||"Gagal mengunggah kabar.");console.error(err);}
+  finally{btn.disabled=false;btn.innerHTML=`<i class="fa-solid fa-paper-plane"></i><span>BAGIKAN KABAR</span>`;}
+}
+
+async function deletePost(id) {
+  const post=cachedPosts.find(p=>p.id===id); if(!post)return;
+  const userPin=prompt("Masukkan PIN Rahasia Postingan ini (atau PIN Master Penilik):"); if(userPin===null)return;
+  if(userPin===post.pin||userPin===PIN_MASTER_PENILIK){
+    try{const {error}=await supabase.from('Posts').delete().eq('id',id);if(error)throw error;alert("Postingan berhasil dihapus dari Supabase!");fetchPosts();}
+    catch(err){alert(`Gagal menghapus postingan: ${err.message}`);}
+  }else alert("PIN Salah! Anda tidak berhak menghapus postingan ini.");
+}
+
+async function toggleLike(id) {
+  const post=cachedPosts.find(p=>p.id===id); if(!post)return;
+  const nama=prompt("Masukkan nama lembaga Anda untuk memberi Suka:");
+  if(nama&&nama.trim()!==''){
+    const clean=nama.trim();
+    if(post.likedBy&&post.likedBy.some(n=>n.toLowerCase()===clean.toLowerCase())){alert("PAUD Anda sudah memberikan Like pada postingan ini!");return;}
+    try{const {error}=await supabase.from('post_likes').insert([{post_id:id,lembaga:clean}]);if(error)throw error;fetchPosts();}
+    catch(err){alert(`Gagal memberi like: ${err.message}`);}
+  }
+}
+
+async function addComment(postId,formElement) {
+  const pengirim=formElement.pengirim.value.trim(), komentar=formElement.komentar.value.trim(), post=cachedPosts.find(p=>p.id===postId);
+  if(post&&pengirim&&komentar){
+    if(post.comments.some(c=>c.nama.toLowerCase()===pengirim.toLowerCase()&&c.teks.toLowerCase()===komentar.toLowerCase())){alert("Komentar tidak boleh diulang-ulang pada postingan yang sama untuk mencegah spam!");return;}
+    try{const {error}=await supabase.from('post_comments').insert([{post_id:postId,pengirim:pengirim,teks:komentar}]);if(error)throw error;formElement.reset();fetchPosts();}
+    catch(err){alert(`Gagal mengirim komentar: ${err.message}`);}
+  }
+}
+
+function toggleRekapLengkap(){showAllRekap=!showAllRekap;const btn=document.getElementById('btnRekapLengkap'),icon=document.getElementById('iconChevron');btn.querySelector('span').innerText=showAllRekap?"Tampilkan 3 Terbaik Saja":"Lihat Keseluruhan PAUD";icon.className=showAllRekap?"fa-solid fa-chevron-up text-[9px]":"fa-solid fa-chevron-down text-[9px]";renderRekap();}
+
+function renderRekap() {
+  const container=document.getElementById('rekapContainer');container.innerHTML='';
+  const stats={};
+  const getStat=n=>{
+    const key=normName(n); if(!key)return null;
+    if(!stats[key])stats[key]={nama:String(n).trim().replace(/\s+/g,' '),postingan:0,likesGave:0,commentsGave:0,poin:0};
+    return stats[key];
+  };
+  cachedPosts.forEach(p=>{
+    const owner=getStat(p.lembaga);
+    if(owner){owner.postingan++;owner.poin+=(p.foto?5:3);}
+    (p.likedBy||[]).forEach(l=>{
+      const who=getStat(l);
+      if(who && normName(l)!==normName(p.lembaga)){who.likesGave++;who.poin++;}
+    });
+    (p.comments||[]).forEach(c=>{
+      const who=getStat(c.nama);
+      if(who && normName(c.nama)!==normName(p.lembaga)){who.commentsGave++;who.poin+=2;}
+    });
+  });
+  const sorted=Object.values(stats).sort((a,b)=>b.poin-a.poin || a.nama.localeCompare(b.nama,'id'));
+  if(!sorted.length){container.innerHTML=`<p class="text-[11px] text-emerald-50 italic">Belum ada data keaktifan.</p>`;return;}
+  (showAllRekap?sorted:sorted.slice(0,3)).forEach((item,index)=>{
+    const div=document.createElement('div');
+    div.className='bg-white/10 backdrop-blur rounded-xl p-2 flex items-center justify-between text-xs border border-white/10';
+    div.innerHTML=`<div class="flex items-center gap-2 min-w-0"><span class="w-6 h-6 rounded-full ${index===0?'bg-lime-300 text-emerald-950':'bg-white/20 text-white'} font-black text-[10px] flex items-center justify-center shrink-0">${index+1}</span><div class="min-w-0"><p class="font-bold text-white text-[11px] truncate">${escapeHtml(item.nama)}${index===0?' 🏆':''}</p><p class="text-[9px] text-emerald-50 truncate">${item.postingan} posting • ${item.commentsGave} komentar • ${item.likesGave} suka</p></div></div><div class="text-right shrink-0 ml-2"><span class="font-extrabold text-lime-200 text-sm">${item.poin}</span><span class="text-[8px] text-emerald-50 block">poin</span></div>`;
+    container.appendChild(div);
+  });
+}
+
+function renderFeed() {
+  renderRekap();const container=document.getElementById('feedContainer');container.innerHTML='';
+  if(!cachedPosts.length){container.innerHTML=`<div class="text-center py-8 text-xs text-slate-400">Belum ada laporan kegiatan yang tersimpan.</div>`;return;}
+  cachedPosts.forEach(post=>{
+    const postCard=document.createElement('div');postCard.className='bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm space-y-3 p-3.5';
+    const commentsHtml=post.comments.map(c=>`<div class="bg-slate-50 p-2 rounded-xl text-xs space-y-0.5"><span class="font-bold text-slate-800 block text-[10.5px]">${escapeHtml(c.nama)}</span><span class="text-slate-600 block text-[10.5px]">${escapeHtml(c.teks)}</span></div>`).join('');
+    postCard.innerHTML=`<div class="flex items-center justify-between"><div class="flex items-center space-x-2.5"><div class="w-8 h-8 rounded-full bg-amber-400 text-amber-950 font-black flex items-center justify-center text-xs shadow-sm shrink-0">${post.lembaga.substring(0,2).toUpperCase()}</div><div><h3 class="text-xs font-bold text-slate-900">${escapeHtml(post.lembaga)}</h3><p class="text-[9.5px] text-slate-500">Kec. Leles • ${formatWaktu(post.created_at)}</p></div></div><button onclick="deletePost(${post.id})" class="text-slate-400 hover:text-rose-600 p-1 rounded-lg hover:bg-rose-50 transition" title="Hapus Postingan"><i class="fa-solid fa-trash-can text-xs"></i></button></div><p class="text-xs text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHtml(post.deskripsi)}</p>${post.foto?`<div class="rounded-xl overflow-hidden bg-slate-100 max-h-80 border border-slate-100"><img src="${post.foto}" alt="Foto Kegiatan" class="w-full h-full object-cover" onerror="this.onerror=null;this.src='https://placehold.co/600x400?text=Foto+Kegiatan';"></div>`:''}<div class="flex items-center justify-between border-t border-b border-slate-100 py-2 text-xs"><button onclick="toggleLike(${post.id})" class="flex items-center gap-1.5 font-bold text-slate-500 hover:text-rose-500 transition"><i class="fa-regular fa-heart text-rose-500"></i><span>${post.likedBy?post.likedBy.length:0} Suka (+1 pt)</span></button><span class="text-slate-400 text-[10.5px]"><i class="fa-regular fa-comment"></i> ${post.comments.length} Komentar</span></div><div class="space-y-2 pt-1"><div class="space-y-1">${commentsHtml}</div><form onsubmit="event.preventDefault(); addComment(${post.id}, this);" class="flex gap-1.5 pt-1"><input type="text" name="pengirim" placeholder="Nama PAUD" required class="w-1/3 px-2 py-1.5 rounded-xl border border-slate-300 text-[10.5px] focus:ring-1 focus:ring-emerald-500 focus:outline-none"><input type="text" name="komentar" placeholder="Tulis komentar..." required class="flex-1 px-2 py-1.5 rounded-xl border border-slate-300 text-[10.5px] focus:ring-1 focus:ring-emerald-500 focus:outline-none"><button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white font-bold text-[10.5px] px-3 py-1.5 rounded-xl transition shrink-0">Kirim</button></form></div>`;
+    container.appendChild(postCard);
+  });
+}
+
+function initRealtime(){
+  supabase.channel('public-changes')
+    .on('postgres_changes',{event:'*',schema:'public',table:'Posts'},()=>fetchPosts())
+    .on('postgres_changes',{event:'*',schema:'public',table:'post_likes'},()=>fetchPosts())
+    .on('postgres_changes',{event:'*',schema:'public',table:'post_comments'},()=>fetchPosts())
+    .subscribe();
+}
+async function startApp(){
+  try{
+    if(!window.supabase){
+      await new Promise((resolve,reject)=>{
+        const sc=document.createElement("script");
+        sc.src="https://unpkg.com/@supabase/supabase-js@2";
+        sc.onload=resolve; sc.onerror=()=>reject(new Error("Library Supabase tidak dapat dimuat. Periksa internet/browser."));
+        document.head.appendChild(sc);
+      });
+    }
+    if(!window.supabase) throw new Error("Supabase JS tidak tersedia.");
+    supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+    let box=document.createElement("div");
+    box.textContent="Menghubungkan ke database...";
+    box.style.cssText="position:fixed;bottom:8px;left:8px;right:8px;z-index:99999;background:#fff7ed;color:#9a3412;border:1px solid #fdba74;border-radius:10px;padding:8px;text-align:center;font:600 12px Arial";
+    document.body.appendChild(box);
+    await fetchPosts();
+    box.textContent="Terhubung ke Supabase";
+    box.style.background="#ecfdf5"; box.style.color="#166534";
+    setTimeout(()=>box.remove(),2500);
+    initRealtime();
+  }catch(e){
+    console.error(e);
+    alert("Koneksi aplikasi gagal: "+e.message);
+    let box=document.createElement("div");
+    box.textContent="ERROR: "+e.message;
+    box.style.cssText="position:fixed;bottom:8px;left:8px;right:8px;z-index:99999;background:#fee2e2;color:#991b1b;border:1px solid #fca5a5;border-radius:10px;padding:10px;text-align:center;font:600 12px Arial";
+    document.body.appendChild(box);
+  }
+}
+document.addEventListener("DOMContentLoaded",startApp);
+</script>
+</body>
+</html>
