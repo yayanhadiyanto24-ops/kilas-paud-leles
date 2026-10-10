@@ -97,7 +97,7 @@ const AUTH_FUNCTION_NAME='smooth-responder';
 const BUCKET='post-images',MAX_FILE_SIZE=8*1024*1024;
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','pdf','doc','docx','xls','xlsx','ppt','pptx','txt','csv']);
 const IMAGE_EXT=new Set(['jpg','jpeg','png','webp']);
-let db=null,urutanKabar='terbaru',semuaKabar=[],voterId=null,notifikasiTerbaru=[],realtimeChannel=null,peringkatDiperluas=false,peringkatTerbuka=true;
+let db=null,urutanKabar='terbaru',semuaKabar=[],voterId=null,notifikasiTerbaru=[],realtimeChannel=null,peringkatDiperluas=false,peringkatTerbuka=true,namaAkunLogin='';
 try{voterId=localStorage.getItem('kilas_paud_likes_user');}catch(e){}
 if(!voterId){voterId=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'v-'+Date.now()+'-'+Math.random().toString(36).slice(2);try{localStorage.setItem('kilas_paud_likes_user',voterId);}catch(e){}}
 const isiEl=document.getElementById('isi');
@@ -117,8 +117,13 @@ function renderNotifikasi(){const el=document.getElementById('daftarNotifikasi')
 function pasangRealtime(){if(!db||realtimeChannel)return;try{realtimeChannel=db.channel('kipa-aktivitas-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'posts'},payload=>{const nama=payload.new?.username||'Sebuah lembaga';tambahNotifikasi('Kabar baru dari '+nama+'.');muat();}).on('postgres_changes',{event:'INSERT',schema:'public',table:'post_comments'},()=>{tambahNotifikasi('Komentar baru pada kabar.');muat();}).on('postgres_changes',{event:'INSERT',schema:'public',table:'post_likes'},()=>{tambahNotifikasi('Ada Suka baru pada kabar.');muat();}).subscribe(status=>{if(status==='SUBSCRIBED')console.info('Realtime KIPA aktif.');});}catch(e){console.warn('Realtime notifikasi belum aktif:',e);}}
 function bersihkanPencarian(){document.getElementById('pencarian').value='';tampilkanKabar();}
 function pilihUrutan(pilihan){urutanKabar=pilihan;document.getElementById('btnTerbaru').classList.toggle('active',pilihan==='terbaru');document.getElementById('btnPopuler').classList.toggle('active',pilihan==='populer');tampilkanKabar();}
+function sinkronkanNamaAkun(){
+ const postName=document.getElementById('nama');
+ if(postName){if(namaAkunLogin){postName.value=namaAkunLogin;postName.readOnly=true;postName.placeholder='Nama akun terisi otomatis';}else{if(postName.readOnly)postName.value='';postName.readOnly=false;postName.placeholder='Contoh: PAUD Melati';}}
+ document.querySelectorAll('input[id^="komentar-nama-"]').forEach(el=>{if(namaAkunLogin){el.value=namaAkunLogin;el.readOnly=true;el.placeholder='Nama akun terisi otomatis';}else{if(el.readOnly)el.value='';el.readOnly=false;el.placeholder='Nama Anda';}});
+}
 async function posting(){
- const tombol=document.getElementById('btnPosting'),nama=document.getElementById('nama').value.trim(),isi=document.getElementById('isi').value.trim(),pin=document.getElementById('pin').value.trim(),file=document.getElementById('foto').files[0];
+ const tombol=document.getElementById('btnPosting'),nama=(namaAkunLogin||document.getElementById('nama').value).trim(),isi=document.getElementById('isi').value.trim(),pin=document.getElementById('pin').value.trim(),file=document.getElementById('foto').files[0];
  if(!nama||!isi){setPesan('Nama/lembaga dan isi kabar wajib diisi.',true);return;}
  if(!db){setPesan('Koneksi database belum siap. Periksa internet lalu muat ulang halaman.',true);return;}
  let fileExt='',isImage=false;
@@ -135,7 +140,7 @@ async function posting(){
    }
    const simpan=await db.from('posts').insert([{username:nama,content:isi,image_url:fileUrl,pin:pin}]);
    if(simpan.error){setPesan('Berkas mungkin sudah terunggah, tetapi kabar gagal disimpan: '+simpan.error.message,true);return;}
-   document.getElementById('nama').value='';isiEl.value='';isiEl.style.height='';document.getElementById('foto').value='';document.getElementById('pin').value='';
+   document.getElementById('nama').value=namaAkunLogin||'';sinkronkanNamaAkun();isiEl.value='';isiEl.style.height='';document.getElementById('foto').value='';document.getElementById('pin').value='';
    setPesan('✅ Kabar berhasil diposting. Poin akan dihitung pada peringkat.');await muat();
  }catch(error){setPesan('Terjadi kesalahan saat mengirim: '+(error?.message||String(error)),true);}
  finally{tombol.disabled=false;tombol.textContent='＋ POSTING KABAR';}
@@ -180,7 +185,7 @@ function tampilkanKabar(){
    const div=document.createElement('article');div.className='post';const id=Number(post.id),nama=escapeHtml(post.username||'Lembaga PAUD'),isi=escapeHtml(post.content||''),tanggal=escapeHtml(formatTanggal(post.created_at)),inisial=escapeHtml((post.username||'P').trim().slice(0,1).toLocaleUpperCase('id-ID'));
    let html='<div class="post-head"><div class="avatar" aria-hidden="true">'+inisial+'</div><div class="post-person"><div class="nama">'+nama+'</div><div class="tanggal">'+tanggal+'</div></div><div class="menu-wrap"><button type="button" class="menu-button" aria-label="Menu postingan" onclick="toggleMenu('+id+')">⋮</button><div id="menu-'+id+'" class="menu-panel" style="display:none"><button type="button" onclick="editPost('+id+')">✏️ Edit postingan</button><button type="button" class="hapus" onclick="hapusPost('+id+')">🗑️ Hapus postingan</button></div></div></div><div class="kabar">'+isi+'</div>';
    if(post.image_url){const ext=ekstensi(String(post.image_url).split('?')[0]);if(IMAGE_EXT.has(ext)||/\.(jpe?g|png|webp)(\?|$)/i.test(post.image_url)){html+='<img class="post-image" src="'+escapeAttribute(post.image_url)+'" alt="Foto kegiatan PAUD" loading="lazy">';}else{const fileName=decodeURIComponent(String(post.image_url).split('/').pop().split('?')[0]||'Lampiran');html+='<div class="post-file"><span aria-hidden="true">📎</span><div style="min-width:0"><a href="'+escapeAttribute(post.image_url)+'" target="_blank" rel="noopener noreferrer">'+escapeHtml(fileName)+'</a><div class="small-note">Buka atau unduh dokumen lampiran</div></div></div>';}}
-   html+='<div class="post-actions"><button type="button" onclick="beriSuka('+id+')">♡ Suka <span id="jumlah-suka-'+id+'">'+post._likeCount+'</span></button><button type="button" onclick="toggleKomentar('+id+')">💬 Komentar <span id="jumlah-komentar-'+id+'">'+post._commentCount+'</span></button></div><div class="comment-area" id="komentar-area-'+id+'"><div id="komentar-list-'+id+'" class="small-note">Buka komentar untuk memuat diskusi.</div><div class="comment-form"><div><label for="komentar-nama-'+id+'">Nama</label><input id="komentar-nama-'+id+'" maxlength="100" placeholder="Nama Anda"></div><div><label for="komentar-isi-'+id+'">Komentar</label><input id="komentar-isi-'+id+'" maxlength="2000" placeholder="Tulis komentar..."></div><button type="button" onclick="kirimKomentar('+id+')">Kirim</button></div><div id="komentar-pesan-'+id+'" class="small-note" role="status"></div></div>';
+   html+='<div class="post-actions"><button type="button" onclick="beriSuka('+id+')">♡ Suka <span id="jumlah-suka-'+id+'">'+post._likeCount+'</span></button><button type="button" onclick="toggleKomentar('+id+')">💬 Komentar <span id="jumlah-komentar-'+id+'">'+post._commentCount+'</span></button></div><div class="comment-area" id="komentar-area-'+id+'"><div id="komentar-list-'+id+'" class="small-note">Buka komentar untuk memuat diskusi.</div><div class="comment-form"><div><label for="komentar-nama-'+id+'">Nama</label><input id="komentar-nama-'+id+'" maxlength="100" value="'+escapeAttribute(namaAkunLogin)+'" placeholder="'+(namaAkunLogin?'Nama akun terisi otomatis':'Nama Anda')+'" '+(namaAkunLogin?'readonly':'')+' ></div><div><label for="komentar-isi-'+id+'">Komentar</label><input id="komentar-isi-'+id+'" maxlength="2000" placeholder="Tulis komentar..."></div><button type="button" onclick="kirimKomentar('+id+')">Kirim</button></div><div id="komentar-pesan-'+id+'" class="small-note" role="status"></div></div>';
    div.innerHTML=html;daftar.appendChild(div);
  }
 }
@@ -188,7 +193,7 @@ async function beriSuka(postId){
  if(!db){alert('Koneksi database belum siap.');return;}
  const post=semuaKabar.find(x=>Number(x.id)===Number(postId));if(!post){alert('Postingan tidak ditemukan. Muat ulang halaman.');return;}
  const keyName='kilas_paud_likes_username';
- let username='';try{username=(localStorage.getItem(keyName)||'').trim();}catch(e){}
+ let username=namaAkunLogin;try{if(!username)username=(localStorage.getItem(keyName)||'').trim();}catch(e){}
  if(!username){username=prompt('Nama atau nama lembaga Anda untuk pencatatan poin Suka:');if(username===null)return;username=username.trim().replace(/\s+/g,' ');if(!username){alert('Nama diperlukan agar poin Suka dapat dihitung.');return;}try{localStorage.setItem(keyName,username);}catch(e){}}
  if(normalisasiNama(username)===normalisasiNama(post.username)){alert('Suka pada postingan sendiri tidak menambah poin.');}
  try{
@@ -200,7 +205,7 @@ async function beriSuka(postId){
 }
 async function toggleKomentar(postId){const area=document.getElementById('komentar-area-'+postId);if(!area)return;const buka=!area.classList.contains('open');area.classList.toggle('open',buka);if(buka)await muatKomentar(postId);}
 async function muatKomentar(postId){const list=document.getElementById('komentar-list-'+postId);if(!list)return;list.textContent='Memuat komentar...';try{const r=await db.from('post_comments').select('id,post_id,username,content,created_at').eq('post_id',postId).order('created_at',{ascending:true});if(r.error){list.textContent='Gagal memuat komentar: '+r.error.message;return;}if(!r.data?.length){list.innerHTML='<div class="small-note">Belum ada komentar.</div>';return;}list.innerHTML=r.data.map(k=>'<div class="comment-item"><div class="comment-name">'+escapeHtml(k.username||'Pengunjung')+'</div><div class="comment-date">'+escapeHtml(formatTanggal(k.created_at))+'</div><div class="comment-text">'+escapeHtml(k.content||'')+'</div></div>').join('');}catch(e){list.textContent='Gagal memuat komentar: '+(e?.message||String(e));}}
-async function kirimKomentar(postId){const namaEl=document.getElementById('komentar-nama-'+postId),isiEl=document.getElementById('komentar-isi-'+postId),pesan=document.getElementById('komentar-pesan-'+postId),username=namaEl.value.trim().replace(/\s+/g,' '),content=isiEl.value.trim();if(!username||!content){pesan.textContent='Nama dan komentar harus diisi.';return;}pesan.textContent='Mengirim komentar...';try{const hasil=await db.from('post_comments').insert({post_id:postId,username,content});if(hasil.error){pesan.textContent='Gagal mengirim komentar: '+hasil.error.message;return;}isiEl.value='';pesan.textContent='Komentar berhasil dikirim.';try{localStorage.setItem('kilas_paud_likes_username',username);}catch(e){}await muatKomentar(postId);const jumlah=await hitungTabel('post_comments',postId),angka=document.getElementById('jumlah-komentar-'+postId);if(angka)angka.textContent=jumlah;const p=semuaKabar.find(x=>Number(x.id)===postId);if(p)p._commentCount=jumlah;if(urutanKabar==='populer')tampilkanKabar();await renderPeringkat();}catch(e){pesan.textContent='Gagal mengirim komentar: '+(e?.message||String(e));}}
+async function kirimKomentar(postId){const namaEl=document.getElementById('komentar-nama-'+postId),isiEl=document.getElementById('komentar-isi-'+postId),pesan=document.getElementById('komentar-pesan-'+postId),username=(namaAkunLogin||namaEl.value).trim().replace(/\s+/g,' '),content=isiEl.value.trim();if(!username||!content){pesan.textContent='Nama dan komentar harus diisi.';return;}pesan.textContent='Mengirim komentar...';try{const hasil=await db.from('post_comments').insert({post_id:postId,username,content});if(hasil.error){pesan.textContent='Gagal mengirim komentar: '+hasil.error.message;return;}isiEl.value='';pesan.textContent='Komentar berhasil dikirim.';try{localStorage.setItem('kilas_paud_likes_username',username);}catch(e){}await muatKomentar(postId);const jumlah=await hitungTabel('post_comments',postId),angka=document.getElementById('jumlah-komentar-'+postId);if(angka)angka.textContent=jumlah;const p=semuaKabar.find(x=>Number(x.id)===postId);if(p)p._commentCount=jumlah;if(urutanKabar==='populer')tampilkanKabar();await renderPeringkat();}catch(e){pesan.textContent='Gagal mengirim komentar: '+(e?.message||String(e));}}
 function toggleMenu(postId){const menu=document.getElementById('menu-'+postId);if(!menu)return;const akanBuka=menu.style.display==='none';document.querySelectorAll('.menu-panel').forEach(m=>m.style.display='none');menu.style.display=akanBuka?'block':'none';}
 async function editPost(postId){const menu=document.getElementById('menu-'+postId);if(menu)menu.style.display='none';const pin=prompt('Masukkan PIN yang dibuat saat memposting kabar ini:');if(pin===null)return;if(!pin.trim()){alert('PIN tidak boleh kosong.');return;}const namaBaru=prompt('Nama / lembaga baru:');if(namaBaru===null)return;if(!namaBaru.trim()){alert('Nama tidak boleh kosong.');return;}const isiBaru=prompt('Isi kabar baru:');if(isiBaru===null)return;if(!isiBaru.trim()){alert('Isi kabar tidak boleh kosong.');return;}try{const hasil=await db.rpc('edit_post_with_pin',{p_post_id:postId,p_pin:pin.trim(),p_username:namaBaru.trim(),p_content:isiBaru.trim()});if(hasil.error){alert('Gagal mengedit. Detail: '+hasil.error.message);return;}if(hasil.data!==true){alert('PIN tidak cocok atau postingan tidak ditemukan.');return;}alert('Postingan berhasil diperbarui.');await muat();}catch(e){alert('Gagal mengedit: '+(e?.message||String(e)));}}
 async function hapusPost(postId){const menu=document.getElementById('menu-'+postId);if(menu)menu.style.display='none';if(!confirm('Yakin ingin menghapus postingan ini? Like dan komentar terkait juga akan ikut terhapus.'))return;const pin=prompt('Masukkan PIN yang dibuat saat memposting kabar ini:');if(pin===null)return;if(!pin.trim()){alert('PIN tidak boleh kosong.');return;}try{const hasil=await db.rpc('delete_post_with_pin',{p_post_id:postId,p_pin:pin.trim()});if(hasil.error){alert('Gagal menghapus. Detail: '+hasil.error.message);return;}if(hasil.data!==true){alert('PIN tidak cocok atau postingan tidak ditemukan.');return;}alert('Postingan berhasil dihapus.');await muat();}catch(e){alert('Gagal menghapus: '+(e?.message||String(e)));}}
@@ -262,12 +267,14 @@ async function akunKeluar(){
 async function perbaruiTampilanAkun(){
  const {data:{session}}=await db.auth.getSession();
  const logged=!!session;
+ const meta=session?.user?.user_metadata||{};
+ namaAkunLogin=logged?String(meta.institution_name||'').trim():'';
  document.getElementById('authForm').style.display=logged?'none':'block';
  document.getElementById('authLoggedIn').style.display=logged?'block':'none';
  document.getElementById('adminMembers').style.display='none';
+ sinkronkanNamaAkun();
  if(!logged)return;
- const meta=session.user?.user_metadata||{};
- document.getElementById('authNamaAktif').textContent=meta.institution_name||'Anggota KIPA';
+ document.getElementById('authNamaAktif').textContent=namaAkunLogin||'Anggota KIPA';
  document.getElementById('authPeranAktif').textContent='Anggota KIPA';
  try{
    await muatAnggotaAdmin();
@@ -307,7 +314,7 @@ async function akunHapusSendiri(){
  }catch(e){setAuthStatus('Gagal menghapus akun: '+(e.message||String(e)),true,true);}
 }
 
-async function mulai(){const daftar=document.getElementById('daftar');try{if(!window.supabase)throw new Error('Pustaka Supabase tidak berhasil dimuat. Periksa internet lalu muat ulang.');db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const cek=await db.from('posts').select('id',{head:true,count:'exact'});if(cek.error){daftar.innerHTML='<div class="empty">Koneksi Supabase bermasalah: '+escapeHtml(cek.error.message)+'</div>';return;}await muat();pasangRealtime();renderNotifikasi();}catch(e){daftar.innerHTML='<div class="empty">KIPA Leles belum dapat terhubung: '+escapeHtml(e?.message||String(e))+'</div>';}}
+async function mulai(){const daftar=document.getElementById('daftar');try{if(!window.supabase)throw new Error('Pustaka Supabase tidak berhasil dimuat. Periksa internet lalu muat ulang.');db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const cek=await db.from('posts').select('id',{head:true,count:'exact'});if(cek.error){daftar.innerHTML='<div class="empty">Koneksi Supabase bermasalah: '+escapeHtml(cek.error.message)+'</div>';return;}await perbaruiTampilanAkun();await muat();pasangRealtime();renderNotifikasi();}catch(e){daftar.innerHTML='<div class="empty">KIPA Leles belum dapat terhubung: '+escapeHtml(e?.message||String(e))+'</div>';}}
 document.addEventListener('click',function(e){if(!e.target.closest('.menu-wrap'))document.querySelectorAll('.menu-panel').forEach(m=>m.style.display='none');if(!e.target.closest('.bell-wrap')){const p=document.getElementById('panelNotifikasi');p.classList.remove('open');document.getElementById('btnLonceng').setAttribute('aria-expanded','false');}});
 document.getElementById('bagianPeringkat').style.display='none';peringkatTerbuka=false;
 mulai();
