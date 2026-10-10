@@ -66,32 +66,7 @@ button,input,textarea{font:inherit}button{cursor:pointer;touch-action:manipulati
 <section class="card" aria-labelledby="judulPosting"><h2 class="card-title" id="judulPosting"><span class="title-icon">✍️</span> Bagikan kabar</h2>  
 <div class="form-grid"><div><label for="nama">Nama / lembaga</label><input id="nama" maxlength="120" placeholder="Contoh: PAUD Melati" autocomplete="organization"></div><div><label for="isi">Ceritakan kegiatan <span class="optional">(wajib)</span></label><textarea id="isi" maxlength="10000" placeholder="Apa kabar baik dari PAUD hari ini?"></textarea></div><div class="form-grid two"><div><label for="foto">Foto atau dokumen <span class="optional">(opsional, maks. 8 MB)</span></label><input id="foto" type="file" accept=".jpg,.jpeg,.png,.webp,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,image/jpeg,image/png,image/webp,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,text/csv"></div><div><label for="pin">PIN postingan <span class="optional">(untuk edit/hapus)</span></label><input id="pin" type="password" maxlength="100" placeholder="Buat PIN postingan" autocomplete="new-password"></div></div><button type="button" id="btnPosting" class="primary" onclick="posting()">＋ POSTING KABAR</button><div id="pesan" class="status" role="status" aria-live="polite"></div><div class="small-note">PIN tidak ditampilkan di kabar. Simpan PIN dengan baik agar postingan dapat diedit atau dihapus.</div></div></section>  
 <section class="card" aria-labelledby="judulKabar"><div class="feed-head"><h2 class="card-title" id="judulKabar"><span class="title-icon">📰</span> Kabar PAUD</h2><span id="jumlahKabar" class="tiny-count"></span></div>  
-<div class="search-row"><div class="search-wrap"><span aria-hidden="true">⌕</span><input id="pencarian" type="search" placeholder="Cari nama lembaga atau kabar..." aria-label="Cari kabar" oninput="tampilkanKabar()"></div><button class="clear-search" type="button" onclick="bersihkanPencarian()">Hapus</button></div>  
-<div class="tabs" role="group" aria-label="Urutan kabar"><button type="button" id="btnTerbaru" class="active" onclick="pilihUrutan('terbaru')">◷ Terbaru</button><button type="button" id="btnPopuler" onclick="pilihUrutan('populer')">♥ Terpopuler</button></div>  
-<div id="daftar" aria-live="polite"><div class="empty">Menghubungkan ke KIPA Leles...</div></div></section>  
-<div class="footnote">KIPA Leles · Menebar Kabar, Berbagi Inspirasi</div>  
-</main>  
-<script>  
-'use strict';  
-const SUPABASE_URL='https://hyiwkftkwacbiowooulp.supabase.co';  
-const SUPABASE_KEY='sb_publishable_lamtyGaC7AQgNTUUUb9hsQ_ebFjuB4z';  
-// Ganti nilai ini dengan nama persis Edge Function yang dibuat di Supabase.  
-const AUTH_FUNCTION_NAME='smooth-responder';  
-const BUCKET='post-images',MAX_FILE_SIZE=8*1024*1024;  
-const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','pdf','doc','docx','xls','xlsx','ppt','pptx','txt','csv']);  
-const IMAGE_EXT=new Set(['jpg','jpeg','png','webp']);  
-let db=null,urutanKabar='terbaru',semuaKabar=[],voterId=null,notifikasiTerbaru=[],realtimeChannel=null,peringkatDiperluas=false,peringkatTerbuka=true;  
-try{voterId=localStorage.getItem('kilas_paud_likes_user');}catch(e){}  
-if(!voterId){voterId=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'v-'+Date.now()+'-'+Math.random().toString(36).slice(2);try{localStorage.setItem('kilas_paud_likes_user',voterId);}catch(e){}}  
-const isiEl=document.getElementById('isi');  
-isiEl.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,300)+'px';});  
-function setPesan(teks,error=false){const el=document.getElementById('pesan');el.textContent=teks;el.classList.toggle('error',error);}  
-function escapeHtml(teks){return String(teks??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}  
-function escapeAttribute(teks){return escapeHtml(teks);}  
-function normalisasiNama(n){return String(n||'').normalize('NFKC').trim().replace(/\s+/g,' ').toLocaleLowerCase('id-ID');}  
-function ekstensi(n){const p=String(n||'').split('.');return p.length>1?p.pop().toLowerCase():'';}  
-function formatTanggal(t){if(!t)return '';const d=new Date(t);return Number.isNaN(d.getTime())?'':d.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});}  
-function toggleBagianPeringkat(){peringkatTerbuka=!peringkatTerbuka;const s=document.getElementById('bagianPeringkat');s.style.display=peringkatTerbuka?'block':'none';document.getElementById('panahPeringkat').textContent=peringkatTerbuka?'↑':'↓';if(peringkatTerbuka)s.scrollIntoView({behavior:'smooth',block:'start'});}  
+<div class="search-row"><div class="search-wrap"><span aria-hidden="true">⌕</span><input id="pencarian" type="search" placeholder="Cari nama lembaga atau kabar..." aria-label="Cari kabar" oninput="tampilkanKabar()"></div><button class="clear-search" type="button" onclick="bersihkanPencarifunction toggleBagianPeringkat(){peringkatTerbuka=!peringkatTerbuka;const s=document.getElementById('bagianPeringkat');s.style.display=peringkatTerbuka?'block':'none';document.getElementById('panahPeringkat').textContent=peringkatTerbuka?'↑':'↓';}  
 function toggleNotifikasi(){const panel=document.getElementById('panelNotifikasi'),btn=document.getElementById('btnLonceng');const buka=!panel.classList.contains('open');panel.classList.toggle('open',buka);btn.setAttribute('aria-expanded',String(buka));if(buka)btn.classList.remove('has-notice');}  
 function hapusNotifikasiLayar(){notifikasiTerbaru=[];renderNotifikasi();document.getElementById('btnLonceng').classList.remove('has-notice');}  
 function tambahNotifikasi(teks){notifikasiTerbaru.unshift({teks,waktu:new Date()});notifikasiTerbaru=notifikasiTerbaru.slice(0,8);renderNotifikasi();document.getElementById('btnLonceng').classList.add('has-notice');}  
