@@ -15,17 +15,28 @@ body{margin:0;background:#f3f6f4;color:var(--ink);font-family:system-ui,-apple-s
 button,input,textarea{font:inherit}
 button{cursor:pointer;touch-action:manipulation}
 button:disabled{opacity:.6;cursor:wait}
-.topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;box-shadow:0 2px 8px #12301a08}
+
+.topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;box-shadow:0 2px 8px #12301a08}
 .top-inner{max-width:760px;margin:auto;padding:9px 12px;display:flex;align-items:center;gap:9px}
 .brand-mark{width:39px;height:39px;flex-shrink:0;border-radius:12px;background:var(--gs);display:grid;place-items:center;font-size:22px}
 .brand{flex:1;min-width:0}
 .brand h1{margin:0;color:var(--gd);font-size:19px;line-height:1.15}
 .brand p{margin:3px 0 0;color:var(--muted);font-size:10px;line-height:1.3}
-.identity{font-size:10px;line-height:1.3;color:var(--gd);margin-top:4px;overflow-wrap:anywhere}
-.identity strong{font-size:11px}
-.header-search{width:125px;flex-shrink:0;position:relative}
-.header-search input{width:100%;min-width:0;padding:9px 8px 9px 27px;border:1px solid var(--line);border-radius:10px;background:#f9fbf9;font-size:12px}
-.search-icon{position:absolute;left:9px;top:7px;color:var(--gd);font-size:18px;pointer-events:none}
+.identity{font-size:10px;line-height:1.3;color:var(--gd);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.15px}
+.identity strong{font-size:10px}
+
+.search-toggle{width:39px;height:39px;flex-shrink:0;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--gd);font-size:23px;display:grid;place-items:center;line-height:1}
+.search-toggle:active{background:var(--gs)}
+.search-drawer{display:none;width:100%;background:#fff;border-bottom:1px solid var(--line);padding:10px 12px;box-shadow:0 5px 12px #153d240b}
+.search-drawer.open{display:block}
+.search-drawer-inner{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:7px}
+.search-drawer input{flex:1;width:100%;min-width:0;padding:11px 12px;border:1px solid #cddfd1;border-radius:10px;background:#f9fbf9;font-size:14px}
+.search-action,.search-close{flex-shrink:0;border:0;border-radius:10px;padding:11px 14px;font-size:12px;font-weight:800}
+.search-action{background:var(--g);color:#fff}
+.search-close{background:#eef3ef;color:#526157}
+.search-action:active{background:var(--gd)}
+.search-close:active{background:#dfe9e1}
+
 .bell-wrap{position:relative;flex-shrink:0}
 .bell{width:39px;height:39px;border:1px solid var(--line);border-radius:11px;background:#fff;color:var(--gd);font-size:20px;position:relative}
 .bell-dot{position:absolute;right:7px;top:6px;width:8px;height:8px;background:#f4c84a;border:2px solid white;border-radius:50%}
@@ -33,6 +44,7 @@ button:disabled{opacity:.6;cursor:wait}
 .bell.has-notice .bell-dot{background:#e34d59;width:10px;height:10px}
 .notification-panel{display:none;position:absolute;right:0;top:46px;width:min(330px,calc(100vw - 20px));max-height:65vh;overflow:auto;z-index:50;padding:12px;background:#fff;border:1px solid var(--line);border-radius:13px;box-shadow:0 8px 28px #17342124;font-size:13px;line-height:1.45}
 .notification-panel.open{display:block}
+
 .container{max-width:760px;margin:auto;padding:11px 10px 30px}
 .tagline{font-size:12px;color:var(--gd);background:var(--gs);border:1px solid #d9efdf;border-radius:11px;padding:9px 11px;margin:0 0 11px}
 .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:11px;box-shadow:var(--shadow)}
@@ -95,6 +107,7 @@ input[type=file]{padding:8px;font-size:12px;background:#fff}
 .small-note{font-size:11px;color:var(--muted);margin-top:5px;line-height:1.4}
 .empty{text-align:center;color:var(--muted);padding:22px 8px;font-size:12px}
 .footnote{text-align:center;color:#8a968e;font-size:11px;padding:4px 0 14px}
+
 @media(min-width:600px){
  .container{padding:16px 14px 34px}
  .top-inner{padding:11px 16px}
@@ -103,16 +116,20 @@ input[type=file]{padding:8px;font-size:12px;background:#fff}
  .comment-form{grid-template-columns:1fr 1fr auto;align-items:start}
  .comment-form button{white-space:nowrap}
 }
-@media(max-width:370px){
- .top-inner{gap:6px;padding:8px}
- .brand-mark{width:33px;height:33px;font-size:19px}
+
+@media(max-width:400px){
+ .top-inner{gap:5px;padding:8px}
+ .brand-mark{width:32px;height:32px;font-size:19px;border-radius:10px}
  .brand h1{font-size:17px}
- .brand p{font-size:9px}
- .identity,.identity strong{font-size:9px}
- .header-search{width:86px}
- .header-search input{font-size:11px;padding-left:25px}
- .bell{width:34px;height:34px}
- .search-icon{top:6px}
+ .brand p{font-size:8.5px;letter-spacing:-.15px}
+ .identity,.identity strong{font-size:8.3px;letter-spacing:-.25px}
+ .search-toggle,.bell{width:34px;height:34px;border-radius:10px}
+ .search-toggle{font-size:21px}
+ .bell{font-size:19px}
+ .search-drawer{padding:9px 8px}
+ .search-drawer-inner{gap:5px}
+ .search-drawer input{padding:10px 8px;font-size:13px}
+ .search-action,.search-close{padding:10px 9px;font-size:11px}
 }
 </style>
 </head>
@@ -126,10 +143,9 @@ input[type=file]{padding:8px;font-size:12px;background:#fff}
    <p>Kilas Informasi PAUD · Menebar Kabar, Berbagi Inspirasi</p>
    <div class="identity">Penilik: <strong>Yayan Hadiyanto, S.Pd.-MT.</strong></div>
   </div>
-  <div class="header-search">
-   <span class="search-icon" aria-hidden="true">⌕</span>
-   <input id="pencarian" type="search" placeholder="Cari kabar..." aria-label="Cari nama lembaga atau kabar" oninput="tampilkanKabar()">
-  </div>
+
+  <button type="button" class="search-toggle" id="btnToggleCari" aria-label="Buka pencarian" aria-expanded="false" onclick="togglePencarian()">⌕</button>
+
   <div class="bell-wrap">
    <button class="bell" type="button" id="btnLonceng" aria-label="Buka notifikasi" aria-expanded="false" onclick="toggleNotifikasi()">♧<span class="bell-dot" aria-hidden="true"></span></button>
    <section class="notification-panel" id="panelNotifikasi" aria-live="polite">
@@ -141,6 +157,14 @@ input[type=file]{padding:8px;font-size:12px;background:#fff}
   </div>
  </div>
 </header>
+
+<div class="search-drawer" id="panelPencarian" aria-label="Panel pencarian">
+ <div class="search-drawer-inner">
+  <input id="pencarian" type="search" placeholder="Cari nama lembaga atau isi kabar..." aria-label="Cari nama lembaga atau isi kabar" oninput="tampilkanKabar()" onkeydown="if(event.key==='Enter'){event.preventDefault();jalankanPencarian()}">
+  <button type="button" class="search-action" onclick="jalankanPencarian()">Cari</button>
+  <button type="button" class="search-close" onclick="tutupPencarian()">Tutup</button>
+ </div>
+</div>
 
 <main class="container">
  <div class="tagline">🌱 Ruang berbagi kabar, kegiatan, dan inspirasi PAUD Kecamatan Leles.</div>
@@ -259,6 +283,36 @@ function formatTanggal(t){
  if(!t)return '';
  const d=new Date(t);
  return Number.isNaN(d.getTime())?'':d.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});
+}
+
+/* PENCARIAN */
+function togglePencarian(){
+ const panel=document.getElementById('panelPencarian');
+ const tombol=document.getElementById('btnToggleCari');
+ const buka=!panel.classList.contains('open');
+
+ panel.classList.toggle('open',buka);
+ tombol.setAttribute('aria-expanded',String(buka));
+ tombol.setAttribute('aria-label',buka?'Tutup pencarian':'Buka pencarian');
+
+ if(buka){
+  setTimeout(function(){
+   const input=document.getElementById('pencarian');
+   if(input)input.focus();
+  },0);
+ }
+}
+function jalankanPencarian(){
+ tampilkanKabar();
+ const input=document.getElementById('pencarian');
+ if(input)input.blur();
+}
+function tutupPencarian(){
+ const panel=document.getElementById('panelPencarian');
+ const tombol=document.getElementById('btnToggleCari');
+ panel.classList.remove('open');
+ tombol.setAttribute('aria-expanded','false');
+ tombol.setAttribute('aria-label','Buka pencarian');
 }
 
 /* FORMULIR BAGIKAN KABAR */
@@ -536,7 +590,8 @@ async function renderPeringkat(){
 /* MENAMPILKAN KABAR */
 function tampilkanKabar(){
  const daftar=document.getElementById('daftar');
- const q=document.getElementById('pencarian').value.trim().toLocaleLowerCase('id-ID');
+ const inputCari=document.getElementById('pencarian');
+ const q=(inputCari?inputCari.value:'').trim().toLocaleLowerCase('id-ID');
 
  let posts=semuaKabar.filter(p=>
   String(p.username||'').toLocaleLowerCase('id-ID').includes(q)||
@@ -810,6 +865,10 @@ document.addEventListener('click',function(e){
   const p=document.getElementById('panelNotifikasi');
   p.classList.remove('open');
   document.getElementById('btnLonceng').setAttribute('aria-expanded','false');
+ }
+ if(!e.target.closest('#panelPencarian')&&!e.target.closest('#btnToggleCari')){
+  const panelCari=document.getElementById('panelPencarian');
+  if(panelCari.classList.contains('open'))tutupPencarian();
  }
 });
 
