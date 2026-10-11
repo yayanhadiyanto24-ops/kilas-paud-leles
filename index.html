@@ -69,7 +69,7 @@ button,input,textarea{font:inherit}button{cursor:pointer;touch-action:manipulati
 <main class="container">
 <div class="tagline">🌱 Ruang berbagi kabar, kegiatan, dan inspirasi PAUD Kecamatan Leles.</div>
 
-<!-- BANNER INFORMASI & KEMITRAAN / IKLAN (SLIDER OTOMATIS 5 DETIK) -->
+<!-- BANNER INFORMASI & KEMITRAAN / IKLAN (SLIDER OTOMATIS 8 DETIK) -->
 <section class="card" id="bannerKemitraan" style="background: linear-gradient(135deg, #eaf7ee, #ffffff); border: 1px solid #b8dec2; margin-bottom: 12px; padding: 12px 14px; position: relative; overflow: hidden;">
   <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
     <span id="badgeBanner" style="font-size: 10px; background: #16834a; color: #fff; padding: 2px 8px; border-radius: 6px; font-weight: bold; letter-spacing: 0.3px;">RUANG KEMITRAAN</span>
@@ -256,7 +256,7 @@ function jalankanSliderBanner() {
   timerBanner = setInterval(() => {
     slideAktifIndex = (slideAktifIndex + 1) % DAFTAR_IKLAN.length;
     tampilkanSlideBanner(slideAktifIndex);
-  }, 5000); // Tepat 5 Detik
+  }, 8000); // Tepat 8 Detik
 }
 
 function stopSliderBanner() {
