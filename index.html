@@ -19,23 +19,21 @@ button,input,textarea{font:inherit}button{cursor:pointer;touch-action:manipulati
 .top-search-clear{flex-shrink:0;width:27px;height:30px;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--green-dark);font-size:19px;line-height:1}
 .brand p{white-space:nowrap;font-size:9px;line-height:1.2;overflow:hidden;text-overflow:ellipsis}
 .identity{white-space:nowrap;font-size:9px;line-height:1.25;overflow:hidden;text-overflow:ellipsis}
-.collapse-title{width:100%;border:0;background:transparent;text-align:left;cursor:pointer;padding:0;justify-content:flex-start;font-size:14px;margin-bottom:0}
+.collapse-title{width:100%;border:0;background:transparent;text-align:left;cursor:pointer;padding:0;justify-content:flex-start;font-size:14px;margin-bottom:10px}
 .collapse-title .title-icon{width:27px;height:27px;font-size:14px;flex-shrink:0}
 .collapse-arrow{margin-left:auto;font-size:16px;color:var(--green-dark);padding:0 5px}
-.compact-section-title{font-size:14px;gap:6px;margin-bottom:0}
+.compact-section-title{font-size:14px;gap:6px;margin-bottom:9px}
 .compact-section-title .title-icon{width:27px;height:27px;font-size:14px}
 @media(max-width:480px){.top-inner{display:grid;grid-template-columns:34px minmax(0,1fr) 36px;grid-template-areas:"mark brand bell" "search search bell";gap:6px 8px;padding:8px 10px}.brand-mark{grid-area:mark;width:34px;height:34px;border-radius:11px;font-size:19px}.brand{grid-area:brand}.brand h1{font-size:17px}.brand p{font-size:9px;letter-spacing:-.1px}.identity{font-size:9px}.top-search{grid-area:search;width:100%;max-width:none;min-width:0;flex:none}.top-search .search-wrap input{height:32px;font-size:12px}.bell-wrap{grid-area:bell;align-self:center}.bell{width:36px;height:36px;border-radius:11px}.notification-panel{right:0}}
 .container{max-width:760px;margin:auto;padding:12px 10px 32px}
 
-/* STICKY ACTION BAR (3 Tombol Sejajar & Melayang) */
-.action-bar-sticky{position:sticky;top:63px;z-index:15;background:#f3f6f4;padding:6px 0 10px;margin:0 0 10px;display:flex;gap:6px;align-items:center}
-.action-bar-sticky > *{flex:1;min-width:0;margin-bottom:0 !important}
-.action-bar-sticky .card{margin-bottom:0 !important;padding:10px !important}
-.action-bar-sticky button.rank-jump{width:100%;height:100%;display:flex;align-items:center;justify-content:center;white-space:nowrap;padding:10px 6px;font-size:12px;background:#fff}
+/* NAVIGATION BAR STICKY (3 TOMBOL SEJAJAR) */
+.sticky-nav-bar{position:sticky;top:60px;z-index:15;background:#f3f6f4;padding:6px 0;margin-bottom:10px;display:flex;gap:6px}
+.nav-btn-item{flex:1;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:4px;border:1px solid #b8dec2;border-radius:11px;padding:9px 6px;background:white;color:var(--green-dark);font-size:12px;font-weight:800;box-shadow:0 2px 5px #153d240d;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-btn-item:active{background:var(--green-soft)}
 
 .tagline{font-size:12px;color:var(--green-dark);background:var(--green-soft);border:1px solid #d9efdf;border-radius:12px;padding:9px 12px;margin:0 0 12px}.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}.card-title{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:16px;font-weight:750}.title-icon{width:30px;height:30px;border-radius:10px;background:var(--green-soft);display:grid;place-items:center;font-size:16px}.form-grid{display:grid;grid-template-columns:1fr;gap:10px}label{display:block;font-size:12px;font-weight:700;color:#53645a;margin:0 0 5px}input,textarea{width:100%;padding:11px 12px;border:1px solid #d9e3dc;border-radius:11px;background:#fcfdfc;color:var(--ink);outline:none;min-width:0}input:focus,textarea:focus{border-color:#62b782;box-shadow:0 0 0 3px #16834a15}textarea{min-height:82px;resize:vertical;line-height:1.45}input[type=file]{padding:9px;font-size:13px;background:#fff}.optional{font-size:11px;color:var(--muted);font-weight:400}.primary{width:100%;border:0;border-radius:11px;padding:12px;background:var(--green);color:#fff;font-weight:750;box-shadow:0 3px 0 #0e6838}.primary:active{transform:translateY(1px);box-shadow:none}.status{font-size:12px;margin-top:9px;line-height:1.4;color:var(--green-dark);overflow-wrap:anywhere}.status.error{color:#b42318}.search-row{display:flex;gap:8px;margin-bottom:11px}.search-wrap{position:relative;flex:1;min-width:0}.search-wrap span{position:absolute;left:12px;top:10px}.search-wrap input{padding-left:36px;background:#f9fbf9}.clear-search{border:1px solid var(--line);border-radius:10px;background:white;color:var(--green-dark);padding:0 12px;font-size:13px;font-weight:700}.tabs{display:flex;gap:7px;background:#f0f5f1;padding:4px;border-radius:12px;margin-bottom:13px}.tabs button{flex:1;border:0;border-radius:9px;padding:10px 8px;background:transparent;color:#607067;font-weight:700;font-size:13px}.tabs button.active{background:#fff;color:var(--green-dark);box-shadow:0 1px 5px #102d1a13}.feed-head{display:flex;justify-content:space-between;align-items:center;gap:8px}.feed-head .card-title{margin-bottom:10px}.tiny-count{font-size:11px;color:var(--muted);white-space:nowrap}.post{padding:14px 0;border-top:1px solid var(--line)}.post:first-child{border-top:0;padding-top:0}.post-head{display:flex;align-items:flex-start;gap:9px}
 
-/* Avatar Ikon Level Member */
 .avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex-shrink:0;overflow:hidden}
 .avatar svg{width:100%;height:100%}
 
@@ -56,9 +54,9 @@ button,input,textarea{font:inherit}button{cursor:pointer;touch-action:manipulati
 .member-row:last-child{border-bottom:0}.member-info{flex:1;min-width:0;overflow-wrap:anywhere;font-size:12px}
 .member-role{font-size:10px;color:var(--muted);margin-top:3px}
 
-/* Tombol Back to Top */
-#backToTopBtn {display:none;position:fixed;bottom:20px;right:20px;z-index:99;background-color:#16834a;color:white;border:none;outline:none;cursor:pointer;width:42px;height:42px;border-radius:50%;box-shadow:0 4px 10px rgba(0,0,0,0.2);font-size:18px;align-items:center;justify-content:center}
-#backToTopBtn:active{background-color:#10683a}
+/* TOMBOL KEMBALI KE ATAS */
+#btnBackToTop{display:none;position:fixed;bottom:20px;right:20px;z-index:99;background:var(--green);color:#fff;border:0;width:42px;height:42px;border-radius:50%;box-shadow:0 4px 12px rgba(0,0,0,0.25);font-size:18px;font-weight:bold;align-items:center;justify-content:center}
+#btnBackToTop:active{background:var(--green-dark)}
 
 @media(min-width:600px){.auth-grid{grid-template-columns:1fr 1fr}}
 @media(min-width:600px){.container{padding:18px 14px 36px}.top-inner{padding:12px 16px}.form-grid.two{grid-template-columns:1fr 1fr}.card{padding:17px}.comment-form{grid-template-columns:1fr 1fr auto;align-items:start}.comment-form button{white-space:nowrap}}
@@ -70,57 +68,52 @@ button,input,textarea{font:inherit}button{cursor:pointer;touch-action:manipulati
 <main class="container">
 <div class="tagline">🌱 Ruang berbagi kabar, kegiatan, dan inspirasi PAUD Kecamatan Leles.</div>
 
-<!-- 3 TOMBOL SEJAJAR DAN MELAYANG (STICKY) -->
-<div class="action-bar-sticky">
-  <section class="card auth-card" aria-labelledby="judulAkun">
-    <button type="button" class="card-title collapse-title" id="judulAkun" aria-expanded="true" aria-controls="authPanelContent" onclick="toggleAkunAnggota()"><span class="title-icon">🔐</span><span style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Akun</span><span class="collapse-arrow" id="panahAkun">↑</span></button>
-  </section>
-  
-  <button type="button" class="rank-jump" onclick="toggleBagikanKabar()">✍️ Bagikan <span id="panahPosting">↑</span></button>
-  
-  <button type="button" class="rank-jump" onclick="toggleBagianPeringkat()">🏅 Peringkat <span id="panahPeringkat">↓</span></button>
-</div>
+<!-- BILAH 3 TOMBOL SEJAJAR & MELAYANG (STICKY) -->
+<nav class="sticky-nav-bar">
+  <button type="button" class="nav-btn-item" onclick="toggleAkunAnggota()">🔐 Akun <span id="panahAkun">↓</span></button>
+  <button type="button" class="nav-btn-item" onclick="toggleBagikanKabar()">✍️ Bagikan <span id="panahPosting">↓</span></button>
+  <button type="button" class="nav-btn-item" onclick="toggleBagianPeringkat()">🏅 Peringkat <span id="panahPeringkat">↓</span></button>
+</nav>
 
 <!-- KONTEN AKUN ANGGOTA -->
-<section class="card auth-card" id="panelAkunContainer" aria-labelledby="judulAkun" style="margin-bottom:12px">
+<section class="card auth-card" id="cardAkun" style="display:none" aria-labelledby="judulAkun">
+  <h2 class="card-title" id="judulAkun" style="font-size:14px;margin-bottom:10px"><span class="title-icon">🔐</span> Akun Anggota KIPA</h2>
   <div id="authPanelContent">
-  <div id="authForm">
-    <div class="auth-grid">
-      <div><label for="authNama">Nama lembaga</label><input id="authNama" maxlength="120" autocomplete="organization" placeholder="Nama lembaga sesuai pendaftaran"></div>
-      <div><label for="authPassword">Kata sandi (minimal 10 karakter saat daftar)</label><input id="authPassword" type="password" maxlength="128" autocomplete="current-password" placeholder="Kata sandi"></div>
+    <div id="authForm">
+      <div class="auth-grid">
+        <div><label for="authNama">Nama lembaga</label><input id="authNama" maxlength="120" autocomplete="organization" placeholder="Nama lembaga sesuai pendaftaran"></div>
+        <div><label for="authPassword">Kata sandi (minimal 10 karakter saat daftar)</label><input id="authPassword" type="password" maxlength="128" autocomplete="current-password" placeholder="Kata sandi"></div>
+      </div>
+      <div class="auth-actions">
+        <button type="button" class="auth-primary" onclick="akunMasuk()">Masuk</button>
+        <button type="button" onclick="akunDaftar()">Daftar anggota</button>
+      </div>
+      <div id="authStatus" class="auth-status" role="status" aria-live="polite"></div>
     </div>
-    <div class="auth-actions">
-      <button type="button" class="auth-primary" onclick="akunMasuk()">Masuk</button>
-      <button type="button" onclick="akunDaftar()">Daftar anggota</button>
+    <div id="authLoggedIn" style="display:none">
+      <div class="auth-current">
+        Masuk sebagai <strong id="authNamaAktif"></strong>
+        <div class="small-note" id="authPeranAktif">Anggota KIPA</div>
+        <div id="authLevelBadgeContainer"></div>
+      </div>
+      <div class="auth-actions">
+        <button type="button" onclick="akunKeluar()">Keluar</button>
+        <button type="button" class="auth-danger" onclick="akunHapusSendiri()">Hapus akun saya</button>
+      </div>
+      <div id="authStatusAktif" class="auth-status" role="status" aria-live="polite"></div>
+      <div id="adminMembers" class="admin-members" style="display:none">
+        <strong>Pengelolaan anggota (Admin)</strong>
+        <div class="small-note">Hapus akun anggota yang salah atau tidak semestinya terdaftar. Postingan lama tidak dihapus oleh fungsi ini.</div>
+        <div id="adminMembersList" style="margin-top:8px"></div>
+        <button type="button" class="rank-jump" style="margin-top:8px" onclick="muatAnggotaAdmin()">Muat ulang daftar anggota</button>
+      </div>
     </div>
-    <div id="authStatus" class="auth-status" role="status" aria-live="polite"></div>
-  </div>
-  <div id="authLoggedIn" style="display:none">
-    <div class="auth-current">
-      Masuk sebagai <strong id="authNamaAktif"></strong>
-      <div class="small-note" id="authPeranAktif">Anggota KIPA</div>
-      <div id="authLevelBadgeContainer"></div>
-    </div>
-    <div class="auth-actions">
-      <button type="button" onclick="akunKeluar()">Keluar</button>
-      <button type="button" class="auth-danger" onclick="akunHapusSendiri()">Hapus akun saya</button>
-    </div>
-    <div id="authStatusAktif" class="auth-status" role="status" aria-live="polite"></div>
-    <div id="adminMembers" class="admin-members" style="display:none">
-      <strong>Pengelolaan anggota (Admin)</strong>
-      <div class="small-note">Hapus akun anggota yang salah atau tidak semestinya terdaftar. Postingan lama tidak dihapus oleh fungsi ini.</div>
-      <div id="adminMembersList" style="margin-top:8px"></div>
-      <button type="button" class="rank-jump" style="margin-top:8px" onclick="muatAnggotaAdmin()">Muat ulang daftar anggota</button>
-    </div>
-  </div>
   </div>
 </section>
 
-<!-- KONTEN PERINGKAT KEAKTIFAN -->
-<section class="card" id="bagianPeringkat" aria-labelledby="judulPeringkat" style="scroll-margin-top:82px;display:none"><h2 class="card-title" id="judulPeringkat"><span class="title-icon">🏅</span> Peringkat Keaktifan</h2><div class="rank-placeholder"><div class="rank-title">🏆 Anggota aktif KIPA Leles</div><p>Poin dihitung dari unggahan, komentar, dan Suka yang memiliki nama anggota.</p><div id="daftarPeringkat" style="margin-top:10px"><div class="small-note">Menghitung keaktifan...</div></div><button type="button" id="btnSemuaPeringkat" class="rank-jump" style="width:100%;margin-top:10px" onclick="toggleSemuaPeringkat()">Tampilkan semua anggota ↓</button></div></section>
-
 <!-- KONTEN FORM BAGIKAN KABAR -->
-<section class="card" id="formKabarContainer" aria-labelledby="judulPosting">
+<section class="card" id="cardPosting" style="display:none" aria-labelledby="judulPosting">
+  <h2 class="card-title compact-section-title" id="judulPosting"><span class="title-icon">✍️</span> Bagikan kabar</h2>
   <div id="formKabarContent">
     <div class="form-grid">
       <div><label for="nama">Nama / lembaga</label><input id="nama" maxlength="120" placeholder="Contoh: PAUD Melati" autocomplete="organization"></div>
@@ -136,7 +129,18 @@ button,input,textarea{font:inherit}button{cursor:pointer;touch-action:manipulati
   </div>
 </section>
 
-<!-- DAFTAR KABAR -->
+<!-- KONTEN PERINGKAT KEAKTIFAN -->
+<section class="card" id="bagianPeringkat" style="display:none;scroll-margin-top:82px" aria-labelledby="judulPeringkat">
+  <h2 class="card-title" id="judulPeringkat"><span class="title-icon">🏅</span> Peringkat Keaktifan</h2>
+  <div class="rank-placeholder">
+    <div class="rank-title">🏆 Anggota aktif KIPA Leles</div>
+    <p>Poin dihitung dari unggahan, komentar, dan Suka yang memiliki nama anggota.</p>
+    <div id="daftarPeringkat" style="margin-top:10px"><div class="small-note">Menghitung keaktifan...</div></div>
+    <button type="button" id="btnSemuaPeringkat" class="rank-jump" style="width:100%;margin-top:10px" onclick="toggleSemuaPeringkat()">Tampilkan semua anggota ↓</button>
+  </div>
+</section>
+
+<!-- DAFTAR POSTINGAN KABAR PAUD -->
 <section class="card" aria-labelledby="judulKabar">
   <div class="feed-head"><h2 class="card-title compact-section-title" id="judulKabar"><span class="title-icon">📰</span> Kabar PAUD</h2><span id="jumlahKabar" class="tiny-count"></span></div>
   <div class="tabs" role="group" aria-label="Urutan kabar"><button type="button" id="btnTerbaru" class="active" onclick="pilihUrutan('terbaru')">◷ Terbaru</button><button type="button" id="btnPopuler" onclick="pilihUrutan('populer')">♥ Terpopuler</button></div>
@@ -146,8 +150,7 @@ button,input,textarea{font:inherit}button{cursor:pointer;touch-action:manipulati
 <div class="footnote">KIPA Leles · Menebar Kabar, Berbagi Inspirasi</div>
 </main>
 
-<!-- TOMBOL KEMBALI KE ATAS (BACK TO TOP) -->
-<button id="backToTopBtn" onclick="kembaliKeAtas()" title="Kembali ke atas" aria-label="Kembali ke atas">↑</button>
+<button id="btnBackToTop" onclick="kembaliKeAtas()" title="Kembali ke atas" aria-label="Kembali ke atas">↑</button>
 
 <script>
 'use strict';
@@ -158,7 +161,6 @@ const BUCKET='post-images',MAX_FILE_SIZE=8*1024*1024;
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','pdf','doc','docx','xls','xlsx','ppt','pptx','txt','csv']);
 const IMAGE_EXT=new Set(['jpg','jpeg','png','webp']);
 
-// Pembuat Ikon Vector Inline — Hijau Tua, Angka Romawi Putih Besar & Proporsional
 function generateLevelSVG(romans) {
   let fontSize = 38;
   if (romans.length >= 4) { fontSize = 28; }      
@@ -191,7 +193,7 @@ function getLevelByPoints(points) {
   return LEVEL_TIERS[LEVEL_TIERS.length - 1];
 }
 
-let db=null,urutanKabar='terbaru',semuaKabar=[],voterId=null,notifikasiTerbaru=[],realtimeChannel=null,peringkatDiperluas=false,peringkatTerbuka=false,namaAkunLogin='';
+let db=null,urutanKabar='terbaru',semuaKabar=[],voterId=null,notifikasiTerbaru=[],realtimeChannel=null,peringkatDiperluas=false,namaAkunLogin='';
 let skorGlobalMap = new Map();
 
 try{voterId=localStorage.getItem('kilas_paud_likes_user');}catch(e){}
@@ -205,22 +207,23 @@ function normalisasiNama(n){return String(n||'').normalize('NFKC').trim().replac
 function ekstensi(n){const p=String(n||'').split('.');return p.length>1?p.pop().toLowerCase():'';}
 function formatTanggal(t){if(!t)return '';const d=new Date(t);return Number.isNaN(d.getTime())?'':d.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'});}
 
-function toggleBagianPeringkat(){
-  peringkatTerbuka=!peringkatTerbuka;
-  const s=document.getElementById('bagianPeringkat');
-  s.style.display=peringkatTerbuka?'block':'none';
-  document.getElementById('panahPeringkat').textContent=peringkatTerbuka?'↑':'↓';
-}
+// Fungsi Lipat-Buka (Accordion)
 function toggleAkunAnggota(){
-  const panel=document.getElementById('authPanelContent'),arrow=document.getElementById('panahAkun');
-  const buka=panel.style.display==='none';
-  panel.style.display=buka?'block':'none';
+  const card=document.getElementById('cardAkun'),arrow=document.getElementById('panahAkun');
+  const buka=card.style.display==='none';
+  card.style.display=buka?'block':'none';
   arrow.textContent=buka?'↑':'↓';
 }
 function toggleBagikanKabar(){
-  const panel=document.getElementById('formKabarContent'),arrow=document.getElementById('panahPosting');
-  const buka=panel.style.display==='none';
-  panel.style.display=buka?'block':'none';
+  const card=document.getElementById('cardPosting'),arrow=document.getElementById('panahPosting');
+  const buka=card.style.display==='none';
+  card.style.display=buka?'block':'none';
+  arrow.textContent=buka?'↑':'↓';
+}
+function toggleBagianPeringkat(){
+  const card=document.getElementById('bagianPeringkat'),arrow=document.getElementById('panahPeringkat');
+  const buka=card.style.display==='none';
+  card.style.display=buka?'block':'none';
   arrow.textContent=buka?'↑':'↓';
 }
 
@@ -232,9 +235,9 @@ function pasangRealtime(){if(!db||realtimeChannel)return;try{realtimeChannel=db.
 function bersihkanPencarian(){document.getElementById('pencarian').value='';tampilkanKabar();}
 function pilihUrutan(pilihan){urutanKabar=pilihan;document.getElementById('btnTerbaru').classList.toggle('active',pilihan==='terbaru');document.getElementById('btnPopuler').classList.toggle('active',pilihan==='populer');tampilkanKabar();}
 
-// Skrip Tombol Back to Top
+// Back to Top Functionality
 window.onscroll = function() {
-  let btn = document.getElementById("backToTopBtn");
+  const btn = document.getElementById("btnBackToTop");
   if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
     btn.style.display = "flex";
   } else {
@@ -354,8 +357,8 @@ async function toggleKomentar(postId){const area=document.getElementById('koment
 async function muatKomentar(postId){const list=document.getElementById('komentar-list-'+postId);if(!list)return;list.textContent='Memuat komentar...';try{const r=await db.from('post_comments').select('id,post_id,username,content,created_at').eq('post_id',postId).order('created_at',{ascending:true});if(r.error){list.textContent='Gagal memuat komentar: '+r.error.message;return;}if(!r.data?.length){list.innerHTML='<div class="small-note">Belum ada komentar.</div>';return;}list.innerHTML=r.data.map(k=>'<div class="comment-item"><div class="comment-name">'+escapeHtml(k.username||'Pengunjung')+'</div><div class="comment-date">'+escapeHtml(formatTanggal(k.created_at))+'</div><div class="comment-text">'+escapeHtml(k.content||'')+'</div></div>').join('');}catch(e){list.textContent='Gagal memuat komentar: '+(e?.message||String(e));}}
 async function kirimKomentar(postId){const namaEl=document.getElementById('komentar-nama-'+postId),isiEl=document.getElementById('komentar-isi-'+postId),pesan=document.getElementById('komentar-pesan-'+postId),username=(namaAkunLogin||namaEl.value).trim().replace(/\s+/g,' '),content=isiEl.value.trim();if(!username||!content){pesan.textContent='Nama dan komentar harus diisi.';return;}pesan.textContent='Mengirim komentar...';try{const hasil=await db.from('post_comments').insert({post_id:postId,username,content});if(hasil.error){pesan.textContent='Gagal mengirim komentar: '+hasil.error.message;return;}isiEl.value='';pesan.textContent='Komentar berhasil dikirim.';try{localStorage.setItem('kilas_paud_likes_username',username);}catch(e){}await muatKomentar(postId);const jumlah=await hitungTabel('post_comments',postId),angka=document.getElementById('jumlah-komentar-'+postId);if(angka)angka.textContent=jumlah;const p=semuaKabar.find(x=>Number(x.id)===postId);if(p)p._commentCount=jumlah;if(urutanKabar==='populer')tampilkanKabar();await renderPeringkat();}catch(e){pesan.textContent='Gagal mengirim komentar: '+(e?.message||String(e));}}
 function toggleMenu(postId){const menu=document.getElementById('menu-'+postId);if(!menu)return;const akanBuka=menu.style.display==='none';document.querySelectorAll('.menu-panel').forEach(m=>m.style.display='none');menu.style.display=akanBuka?'block':'none';}
-async function editPost(postId){const menu=document.getElementById('menu-'+postId);if(menu)menu.style.display='none';const pin=prompt('Masukkan PIN yang dibuat saat memposting kabar ini:');if(pin===null)return;if(!pin.trim()){alert('PIN tidak boleh kosong.');return;}const namaBaru=prompt('Nama / lembaga baru:');if(namaBaru===null)return;if(!namaBaru.trim()){alert('Nama tidak boleh kosong.');return;}const isiBaru=prompt('Isi kabar baru:');if(isiBaru===null)return;if(!isiBaru.trim()){alert('Isi kabar tidak boleh kosong.');return;}try{const hasil=await db.rpc('edit_post_with_pin',{p_post_id:postId,p_pin:pin.trim(),p_username:namaBaru.trim(),p_content:isiBaru.trim()});if(hasil.error){alert('Gagal mengedit. Detail: '+hasil.error.message);return;}if(hasil.data!==true){alert('PIN tidak cocok atau postingan tidak ditemukan.');return;}alert('Postingan berhasil diperbarui.');await muat();}catch(e){alert('Gagal mengedit: '+(e?.message||String(e));}}
-async function hapusPost(postId){const menu=document.getElementById('menu-'+postId);if(menu)menu.style.display='none';if(!confirm('Yakin ingin menghapus postingan ini? Like dan komentar terkait juga akan ikut terhapus.'))return;const pin=prompt('Masukkan PIN yang dibuat saat memposting kabar ini:');if(pin===null)return;if(!pin.trim()){alert('PIN tidak boleh kosong.');return;}try{const hasil=await db.rpc('delete_post_with_pin',{p_post_id:postId,p_pin:pin.trim()});if(hasil.error){alert('Gagal menghapus. Detail: '+hasil.error.message);return;}if(hasil.data!==true){alert('PIN tidak cocok atau postingan tidak ditemukan.');return;}alert('Postingan berhasil dihapus.');await muat();}catch(e){alert('Gagal menghapus: '+(e?.message||String(e));}}
+async function editPost(postId){const menu=document.getElementById('menu-'+postId);if(menu)menu.style.display='none';const pin=prompt('Masukkan PIN yang dibuat saat memposting kabar ini:');if(pin===null)return;if(!pin.trim()){alert('PIN tidak boleh kosong.');return;}const namaBaru=prompt('Nama / lembaga baru:');if(namaBaru===null)return;if(!namaBaru.trim()){alert('Nama tidak boleh kosong.');return;}const isiBaru=prompt('Isi kabar baru:');if(isiBaru===null)return;if(!isiBaru.trim()){alert('Isi kabar tidak boleh kosong.');return;}try{const hasil=await db.rpc('edit_post_with_pin',{p_post_id:postId,p_pin:pin.trim(),p_username:namaBaru.trim(),p_content:isiBaru.trim()});if(hasil.error){alert('Gagal mengedit. Detail: '+hasil.error.message);return;}if(hasil.data!==true){alert('PIN tidak cocok atau postingan tidak ditemukan.');return;}alert('Postingan berhasil diperbarui.');await muat();}catch(e){alert('Gagal mengedit: '+(e?.message||String(e)));}}
+async function hapusPost(postId){const menu=document.getElementById('menu-'+postId);if(menu)menu.style.display='none';if(!confirm('Yakin ingin menghapus postingan ini? Like dan komentar terkait juga akan ikut terhapus.'))return;const pin=prompt('Masukkan PIN yang dibuat saat memposting kabar ini:');if(pin===null)return;if(!pin.trim()){alert('PIN tidak boleh kosong.');return;}try{const hasil=await db.rpc('delete_post_with_pin',{p_post_id:postId,p_pin:pin.trim()});if(hasil.error){alert('Gagal menghapus. Detail: '+hasil.error.message);return;}if(hasil.data!==true){alert('PIN tidak cocok atau postingan tidak ditemukan.');return;}alert('Postingan berhasil dihapus.');await muat();}catch(e){alert('Gagal menghapus: '+(e?.message||String(e)));}}
 
 function setAuthStatus(teks,error=false,aktif=false){
  const el=document.getElementById(aktif?'authStatusAktif':'authStatus');
@@ -468,14 +471,6 @@ async function akunHapusSendiri(){
 
 async function mulai(){const daftar=document.getElementById('daftar');try{if(!window.supabase)throw new Error('Pustaka Supabase tidak berhasil dimuat. Periksa internet lalu muat ulang.');db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const cek=await db.from('posts').select('id',{head:true,count:'exact'});if(cek.error){daftar.innerHTML='<div class="empty">Koneksi Supabase bermasalah: '+escapeHtml(cek.error.message)+'</div>';return;}await perbaruiTampilanAkun();await muat();pasangRealtime();renderNotifikasi();}catch(e){daftar.innerHTML='<div class="empty">KIPA Leles belum dapat terhubung: '+escapeHtml(e?.message||String(e))+'</div>';}}
 document.addEventListener('click',function(e){if(!e.target.closest('.menu-wrap'))document.querySelectorAll('.menu-panel').forEach(m=>m.style.display='none');if(!e.target.closest('.bell-wrap')){const p=document.getElementById('panelNotifikasi');p.classList.remove('open');document.getElementById('btnLonceng').setAttribute('aria-expanded','false');}});
-
-// Pengaturan awal status panel tertutup sesuai tampilan di gambar referensi Anda
-document.getElementById('authPanelContent').style.display='none';
-document.getElementById('panahAkun').textContent='↓';
-document.getElementById('formKabarContent').style.display='none';
-document.getElementById('panahPosting').textContent='↓';
-document.getElementById('bagianPeringkat').style.display='none';
-peringkatTerbuka=false;
 
 mulai();
 </script>
