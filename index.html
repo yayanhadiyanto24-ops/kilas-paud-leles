@@ -107,27 +107,31 @@ const BUCKET='post-images',MAX_FILE_SIZE=8*1024*1024;
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','pdf','doc','docx','xls','xlsx','ppt','pptx','txt','csv']);
 const IMAGE_EXT=new Set(['jpg','jpeg','png','webp']);
 
-// Pembuat Ikon Vector Inline (Anti Break / 100% Tampil Tanpa Koneksi File External)
-function generateLevelSVG(romans, colorBg, colorBorder, colorText) {
+// Pembuat Ikon Vector Inline — Hijau Tua, Angka Romawi Putih Besar & Proporsional
+function generateLevelSVG(romans) {
+  let fontSize = 38;
+  if (romans.length >= 4) { fontSize = 28; }      // Contoh: VIII
+  else if (romans.length === 3) { fontSize = 32; } // Contoh: VII, III
+  
   return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="50" r="46" fill="${colorBg}" stroke="${colorBorder}" stroke-width="5"/>
-    <circle cx="50" cy="50" r="40" fill="none" stroke="${colorBorder}" stroke-width="1.5" stroke-dasharray="3,3"/>
-    <text x="50%" y="58%" dominant-baseline="middle" text-anchor="middle" font-family="Georgia, serif" font-weight="bold" font-size="28" fill="${colorText}">${romans}</text>
+    <circle cx="50" cy="50" r="46" fill="#16834a" stroke="#10683a" stroke-width="3"/>
+    <circle cx="50" cy="50" r="41" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="3,3"/>
+    <text x="50%" y="52%" dominant-baseline="central" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-weight="bold" font-size="${fontSize}" fill="#ffffff">${romans}</text>
   </svg>`;
 }
 
-// Skema Level Member KIPA Leles dengan Desain Warna Medali Nyata
+// Skema Level Member KIPA Leles
 const LEVEL_TIERS = [
-  { level: 'X', name: 'Level X', minPoints: 10000, svg: generateLevelSVG('X', '#ffd700', '#b8860b', '#4a3200') },
-  { level: 'IX', name: 'Level IX', minPoints: 6500, svg: generateLevelSVG('IX', '#e5e4e2', '#708090', '#2f4f4f') },
-  { level: 'VIII', name: 'Level VIII', minPoints: 4000, svg: generateLevelSVG('VIII', '#800020', '#ffd700', '#ffffff') },
-  { level: 'VII', name: 'Level VII', minPoints: 2500, svg: generateLevelSVG('VII', '#daf7a6', '#28a745', '#155724') },
-  { level: 'VI', name: 'Level VI', minPoints: 1600, svg: generateLevelSVG('VI', '#e6e6fa', '#8a2be2', '#4b0082') },
-  { level: 'V', name: 'Level V', minPoints: 1000, svg: generateLevelSVG('V', '#1e90ff', '#00008b', '#ffffff') },
-  { level: 'IV', name: 'Level IV', minPoints: 600, svg: generateLevelSVG('IV', '#2ed573', '#10ac84', '#ffffff') },
-  { level: 'III', name: 'Level III', minPoints: 300, svg: generateLevelSVG('III', '#70a1ff', '#1e90ff', '#ffffff') },
-  { level: 'II', name: 'Level II', minPoints: 100, svg: generateLevelSVG('II', '#f1f2f6', '#a4b0be', '#2f3542') },
-  { level: 'I', name: 'Level I', minPoints: 0, svg: generateLevelSVG('I', '#f5cd79', '#eccc68', '#574b90') }
+  { level: 'X', name: 'Level X', minPoints: 10000, svg: generateLevelSVG('X') },
+  { level: 'IX', name: 'Level IX', minPoints: 6500, svg: generateLevelSVG('IX') },
+  { level: 'VIII', name: 'Level VIII', minPoints: 4000, svg: generateLevelSVG('VIII') },
+  { level: 'VII', name: 'Level VII', minPoints: 2500, svg: generateLevelSVG('VII') },
+  { level: 'VI', name: 'Level VI', minPoints: 1600, svg: generateLevelSVG('VI') },
+  { level: 'V', name: 'Level V', minPoints: 1000, svg: generateLevelSVG('V') },
+  { level: 'IV', name: 'Level IV', minPoints: 600, svg: generateLevelSVG('IV') },
+  { level: 'III', name: 'Level III', minPoints: 300, svg: generateLevelSVG('III') },
+  { level: 'II', name: 'Level II', minPoints: 100, svg: generateLevelSVG('II') },
+  { level: 'I', name: 'Level I', minPoints: 0, svg: generateLevelSVG('I') }
 ];
 
 function getLevelByPoints(points) {
