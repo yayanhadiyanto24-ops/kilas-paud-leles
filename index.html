@@ -69,17 +69,20 @@ button,input,textarea{font:inherit}button{cursor:pointer;touch-action:manipulati
 <main class="container">
 <div class="tagline">🌱 Ruang berbagi kabar, kegiatan, dan inspirasi PAUD Kecamatan Leles.</div>
 
-<!-- BANNER PENGUMUMAN OTOMATIS TOP 3 MINGGUAN -->
-<section id="bannerPengumumanMalamMinggu" class="card" style="display:none; background: linear-gradient(135deg, #fff9e6, #ffffff); border: 1px solid #f4c84a; margin-bottom: 12px; padding: 12px;">
-  <div style="display: flex; align-items: center; justify-content: space-between;">
-    <div style="display: flex; align-items: center; gap: 8px; font-weight: 800; color: #8a6d1c; font-size: 13px;">
-      <span>🏆</span> PENGUMUMAN TOP 3 KEAKTIFAN MINGGU INI
-    </div>
-    <span style="font-size: 10px; background: #f4c84a; color: #382b04; padding: 2px 8px; border-radius: 10px; font-weight: bold;">Edisi Mingguan</span>
+<!-- BANNER INFORMASI & KEMITRAAN / IKLAN (SLIDER OTOMATIS 5 DETIK) -->
+<section class="card" id="bannerKemitraan" style="background: linear-gradient(135deg, #eaf7ee, #ffffff); border: 1px solid #b8dec2; margin-bottom: 12px; padding: 12px 14px; position: relative; overflow: hidden;">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+    <span id="badgeBanner" style="font-size: 10px; background: #16834a; color: #fff; padding: 2px 8px; border-radius: 6px; font-weight: bold; letter-spacing: 0.3px;">RUANG KEMITRAAN</span>
+    <a id="btnWaBanner" href="https://wa.me/6281322578732?text=Halo%20Admin%20KIPA,%20saya%20ingin%20bertanya%20mengenai%20pemasangan%20informasi/iklan" target="_blank" rel="noopener" style="font-size: 11px; color: #16834a; text-decoration: none; font-weight: 700; background: #fff; border: 1px solid #b8dec2; padding: 4px 9px; border-radius: 8px; transition: all 0.2s;">Hubungi Admin ↗</a>
   </div>
-  <div id="isiPengumumanTop3" style="margin-top: 10px; font-size: 13px; line-height: 1.5; color: #24332a;">
-    <div class="small-note">Menghitung 3 terbaik minggu ini...</div>
+
+  <!-- Konten Slide (Iklan / Informasi) -->
+  <div id="kontenSlideBanner" style="min-height: 48px; transition: opacity 0.3s ease-in-out;">
+    <!-- Isi slide diinjeksikan secara otomatis lewat JavaScript -->
   </div>
+
+  <!-- Indikator Titik (Dots) Navigasi Slider -->
+  <div id="dotsBanner" style="display: flex; justify-content: center; gap: 5px; margin-top: 10px;"></div>
 </section>
 
 <!-- BILAH 3 TOMBOL SEJAJAR & MELAYANG (STICKY) -->
@@ -175,6 +178,97 @@ const BUCKET='post-images',MAX_FILE_SIZE=8*1024*1024;
 const ALLOWED_EXT=new Set(['jpg','jpeg','png','webp','pdf','doc','docx','xls','xlsx','ppt','pptx','txt','csv']);
 const IMAGE_EXT=new Set(['jpg','jpeg','png','webp']);
 
+// LOGIKA BANNER SLIDER IKLAN & KEMITRAAN (5 DETIK)
+const DAFTAR_IKLAN = [
+  {
+    badge: "RUANG KEMITRAAN",
+    badgeBg: "#16834a",
+    judul: "📢 Ruang Informasi & Promosi Mitra",
+    deskripsi: "Ingin mengenalkan usaha, layanan, atau produk Anda kepada seluruh lembaga PAUD se-Kecamatan Leles? Hubungi Admin KIPA Leles untuk memasang informasi di sini.",
+    tombolTeks: "Hubungi Admin ↗",
+    waText: "Halo%20Admin%20KIPA,%20saya%20ingin%20bertanya%20mengenai%20pemasangan%20informasi/iklan"
+  },
+  {
+    badge: "CONTOH IKLAN",
+    badgeBg: "#d97706",
+    judul: "🎒 Kedai Pramuka Rancagé Al-Batukasuri",
+    deskripsi: "Menyediakan atribut Pramuka lengkap, seragam, TKK, TKU, dan perlengkapan kegiatan luar ruangan untuk tingkat Prasiaga & Siaga PAUD.",
+    tombolTeks: "Tanya Produk ↗",
+    waText: "Halo%20Kedai%20Pramuka%20Rancagé,%20saya%20ingin%20tanya%20produk%20perlengkapan%20Pramuka"
+  },
+  {
+    badge: "CONTOH IKLAN",
+    badgeBg: "#d97706",
+    judul: "🎨 APE & Perlengkapan Belajar PAUD — Rancagé",
+    deskripsi: "Melayani kebutuhan Alat Permainan Edukatif (APE), media pembelajaran, dan alat tulis kantor/lembaga PAUD se-Kecamatan Leles.",
+    tombolTeks: "Pesan Sekarang ↗",
+    waText: "Halo%20Rancagé,%20saya%20ingin%20tanya%20mengenai%20APE%20dan%20perlengkapan%20PAUD"
+  }
+];
+
+let slideAktifIndex = 0;
+let timerBanner = null;
+
+function tampilkanSlideBanner(index) {
+  const container = document.getElementById('kontenSlideBanner');
+  const badgeEl = document.getElementById('badgeBanner');
+  const dotsContainer = document.getElementById('dotsBanner');
+  const btnWa = document.getElementById('btnWaBanner');
+  
+  if (!container || !DAFTAR_IKLAN.length) return;
+
+  const data = DAFTAR_IKLAN[index];
+
+  container.style.opacity = '0';
+  
+  setTimeout(() => {
+    if (badgeEl) {
+      badgeEl.textContent = data.badge;
+      badgeEl.style.background = data.badgeBg;
+    }
+
+    container.innerHTML = `
+      <div style="font-size: 13px; line-height: 1.45; color: #24332a; font-weight: 700;">
+        ${data.judul}
+      </div>
+      <div style="font-size: 11px; color: #52645a; margin-top: 3px; line-height: 1.4;">
+        ${data.deskripsi}
+      </div>
+    `;
+
+    if (btnWa) {
+      btnWa.textContent = data.tombolTeks;
+      btnWa.href = `https://wa.me/6281322578732?text=${data.waText}`;
+    }
+
+    if (dotsContainer) {
+      dotsContainer.innerHTML = DAFTAR_IKLAN.map((_, i) => `
+        <span onclick="pindahSlideBanner(${i})" style="width: ${i === index ? '14px' : '6px'}; height: 6px; background: ${i === index ? '#16834a' : '#c2dbc8'}; border-radius: 3px; cursor: pointer; transition: all 0.3s ease;"></span>
+      `).join('');
+    }
+
+    container.style.opacity = '1';
+  }, 200);
+}
+
+function jalankanSliderBanner() {
+  stopSliderBanner();
+  timerBanner = setInterval(() => {
+    slideAktifIndex = (slideAktifIndex + 1) % DAFTAR_IKLAN.length;
+    tampilkanSlideBanner(slideAktifIndex);
+  }, 5000); // Tepat 5 Detik
+}
+
+function stopSliderBanner() {
+  if (timerBanner) clearInterval(timerBanner);
+}
+
+function pindahSlideBanner(index) {
+  slideAktifIndex = index;
+  tampilkanSlideBanner(slideAktifIndex);
+  jalankanSliderBanner();
+}
+
 function generateLevelSVG(romans) {
   let fontSize = 38;
   if (romans.length >= 4) { fontSize = 28; }      
@@ -262,41 +356,6 @@ function kembaliKeAtas() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Fungsi Pengumuman Top 3 Mingguan Otomatis
-function cekDanTampilkanPengumumanTop3(daftarPeringkat) {
-  const skrg = new Date();
-  const hari = skrg.getDay();   
-  const jam = skrg.getHours();   
-
-  const sedangLiburRekap = (hari === 6 && jam < 18);
-  const banner = document.getElementById('bannerPengumumanMalamMinggu');
-  const isiContainer = document.getElementById('isiPengumumanTop3');
-
-  if (!banner || !isiContainer) return;
-
-  if (!sedangLiburRekap && daftarPeringkat && daftarPeringkat.length > 0) {
-    const top3 = daftarPeringkat.slice(0, 3);
-    const medali = ['🥇', '🥈', '🥉'];
-    
-    let html = '<div style="margin-bottom:6px; font-weight:700; color:#10683a;">Apresiasi Lembaga Paling Aktif Minggu Ini:</div><div style="display:grid; gap:4px;">';
-    
-    top3.forEach((item, index) => {
-      const lvl = getLevelByPoints(item.poin);
-      html += `<div style="display:flex; align-items:center; justify-content:space-between; background:#ffffff; padding:6px 10px; border-radius:8px; border:1px solid #f0e6c8; font-size:12px;">
-        <div><strong>${medali[index]} ${escapeHtml(item.nama)}</strong> <span style="font-size:10px; color:#718078;">(${lvl.name})</span></div>
-        <div style="font-weight:800; color:#16834a;">${item.poin} Poin</div>
-      </div>`;
-    });
-    
-    html += '</div><div style="margin-top:8px; font-size:11px; color:#718078; font-style:italic;">🌱 Peringkat diperbarui otomatis setiap Sabtu pukul 18.00 WIB.</div>';
-    
-    isiContainer.innerHTML = html;
-    banner.style.display = 'block'; 
-  } else {
-    banner.style.display = 'none';  
-  }
-}
-
 function sinkronkanNamaAkun(){
  const postName=document.getElementById('nama');
  if(postName){if(namaAkunLogin){postName.value=namaAkunLogin;postName.readOnly=true;postName.placeholder='Nama akun terisi otomatis';}else{if(postName.readOnly)postName.value='';postName.readOnly=false;postName.placeholder='Contoh: PAUD Melati';}}
@@ -350,9 +409,6 @@ async function renderPeringkat(){
    for(const l of(likesRes.data||[])){const key=normalisasiNama(l.username),owner=postById.get(String(l.post_id));if(key&&owner&&key!==owner)tambah(l.username,1);}
    skorGlobalMap = skor;
    const daftar=[...skor.entries()].map(([key,poin])=>({key,nama:label.get(key)||key,poin})).sort((a,b)=>b.poin-a.poin||a.nama.localeCompare(b.nama,'id'));
-   
-   // Jalankan fungsi pengumuman Top 3 otomatis
-   cekDanTampilkanPengumumanTop3(daftar);
 
    if(!daftar.length){el.innerHTML='<div class="small-note">Belum ada aktivitas untuk dihitung.</div>';if(tombol)tombol.style.display='none';perbaruiBadgeLevelUserAktif();return;}
    const terlihat=peringkatDiperluas?daftar:daftar.slice(0,3);
@@ -522,7 +578,31 @@ async function akunHapusSendiri(){
  }catch(e){setAuthStatus('Gagal menghapus akun: '+(e.message||String(e)),true,true);}
 }
 
-async function mulai(){const daftar=document.getElementById('daftar');try{if(!window.supabase)throw new Error('Pustaka Supabase tidak berhasil dimuat. Periksa internet lalu muat ulang.');db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);const cek=await db.from('posts').select('id',{head:true,count:'exact'});if(cek.error){daftar.innerHTML='<div class="empty">Koneksi Supabase bermasalah: '+escapeHtml(cek.error.message)+'</div>';return;}await perbaruiTampilanAkun();await muat();pasangRealtime();renderNotifikasi();}catch(e){daftar.innerHTML='<div class="empty">KIPA Leles belum dapat terhubung: '+escapeHtml(e?.message||String(e))+'</div>';}}
+async function mulai(){
+  const daftar=document.getElementById('daftar');
+  try{
+    if(!window.supabase)throw new Error('Pustaka Supabase tidak berhasil dimuat. Periksa internet lalu muat ulang.');
+    db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    const cek=await db.from('posts').select('id',{head:true,count:'exact'});
+    if(cek.error){daftar.innerHTML='<div class="empty">Koneksi Supabase bermasalah: '+escapeHtml(cek.error.message)+'</div>';return;}
+    await perbaruiTampilanAkun();
+    await muat();
+    pasangRealtime();
+    renderNotifikasi();
+
+    // Jalankan Slider Banner Kemitraan
+    tampilkanSlideBanner(0);
+    jalankanSliderBanner();
+    const bannerEl = document.getElementById('bannerKemitraan');
+    if (bannerEl) {
+      bannerEl.addEventListener('mouseenter', stopSliderBanner);
+      bannerEl.addEventListener('mouseleave', jalankanSliderBanner);
+    }
+  }catch(e){
+    daftar.innerHTML='<div class="empty">KIPA Leles belum dapat terhubung: '+escapeHtml(e?.message||String(e))+'</div>';
+  }
+}
+
 document.addEventListener('click',function(e){if(!e.target.closest('.menu-wrap'))document.querySelectorAll('.menu-panel').forEach(m=>m.style.display='none');if(!e.target.closest('.bell-wrap')){const p=document.getElementById('panelNotifikasi');p.classList.remove('open');document.getElementById('btnLonceng').setAttribute('aria-expanded','false');}});
 
 mulai();
